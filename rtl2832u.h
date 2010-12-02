@@ -136,6 +136,7 @@ enum RTL2832U_RC_STATE{
 
 extern struct dvb_frontend * rtl2832u_fe_attach(struct dvb_usb_device *d);
 extern int rtl2832u_rc_query(struct dvb_usb_device *d);
+int rtl2832u_rc_open(void *data);
 
 #endif
 

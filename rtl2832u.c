@@ -146,7 +146,7 @@ static struct dvb_usb_device_properties rtl2832u_properties = {
 		.rc_interval      = 287,
 
 		.rc_props = {
-			//.open = rtl2832u_rc_open,
+			.open = rtl2832u_rc_open,
 			.driver_type = RC_DRIVER_IR_RAW,
 			.allowed_protos = IR_TYPE_ALL,
 			
