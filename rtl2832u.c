@@ -125,15 +125,14 @@ int rtl2832u_remoto_control_initial_setting(struct dvb_usb_device *d)
 
 	//begin setting
 	int ret = RC_FUNCTION_SUCCESS;
-	u8 data=0,i=0,NumberOfRcInitialTable=0;
+	u8 data=0,i=0;
 
 
 	deb_rc("+rc_%s\n", __FUNCTION__);
 
-	NumberOfRcInitialTable = sizeof(p_rtl2832u_rc_initial_table)/sizeof(RT_rc_set_reg_struct);
 	
 
-	for (i=0;i<NumberOfRcInitialTable;i++)
+	for (i=0;i<ARRAY_SIZE(p_rtl2832u_rc_initial_table); i++)
 	{	
 		switch(p_rtl2832u_rc_initial_table[i].type)
 		{
