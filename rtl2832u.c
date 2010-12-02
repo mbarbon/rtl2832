@@ -352,10 +352,7 @@ static void rtl2832u_usb_disconnect(struct usb_interface *intf)
 }
 
 
-static struct dvb_usb_device_properties rtl2832u_1st_properties;
-static struct dvb_usb_device_properties rtl2832u_2nd_properties;
-static struct dvb_usb_device_properties rtl2832u_3th_properties;
-static struct dvb_usb_device_properties rtl2832u_4th_properties;
+static struct dvb_usb_device_properties rtl2832u_properties;
 
 
 //#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
@@ -365,10 +362,7 @@ static int rtl2832u_usb_probe(struct usb_interface *intf,
 	if (!intf->altsetting->desc.bNumEndpoints)
 		return -ENODEV;
 
-	if ( ( 0== dvb_usb_device_init(intf,&rtl2832u_1st_properties,THIS_MODULE,NULL,adapter_nr) )||
-		( 0== dvb_usb_device_init(intf,&rtl2832u_2nd_properties,THIS_MODULE,NULL,adapter_nr) ) ||
-		( 0== dvb_usb_device_init(intf,&rtl2832u_3th_properties,THIS_MODULE,NULL,adapter_nr) ) ||
-		( 0== dvb_usb_device_init(intf,&rtl2832u_4th_properties,THIS_MODULE,NULL,adapter_nr) ) )
+	if (!dvb_usb_device_init(intf,&rtl2832u_properties,THIS_MODULE,NULL,adapter_nr))
 		return 0;
 
 	return -ENODEV;
@@ -411,7 +405,7 @@ static struct usb_device_id rtl2832u_usb_table [] = {
 
 MODULE_DEVICE_TABLE(usb, rtl2832u_usb_table);
 
-static struct dvb_usb_device_properties rtl2832u_1st_properties = {
+static struct dvb_usb_device_properties rtl2832u_properties = {
 
 	.num_adapters = 1,
 	.adapter = 
@@ -439,7 +433,6 @@ static struct dvb_usb_device_properties rtl2832u_1st_properties = {
 	
 	//remote control
 	.rc.legacy = {
-
 		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
 		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
 		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
@@ -447,7 +440,7 @@ static struct dvb_usb_device_properties rtl2832u_1st_properties = {
 	},
 	#endif
 	
-	.num_device_descs = 6,
+	.num_device_descs = 27,
 	.devices = {
 		{ .name = "RTL2832U DVB-T USB DEVICE",
 		  .cold_ids = { NULL, NULL },
@@ -473,46 +466,6 @@ static struct dvb_usb_device_properties rtl2832u_1st_properties = {
 		  .cold_ids = { NULL, NULL },
 		  .warm_ids = { &rtl2832u_usb_table[5], NULL },
 		},
-		{ NULL },
-	}
-};
-
-
-static struct dvb_usb_device_properties rtl2832u_2nd_properties = {
-
-	.num_adapters = 1,
-	.adapter = 
-	{
-		{
-			.streaming_ctrl = rtl2832u_streaming_ctrl,
-			.frontend_attach = rtl2832u_frontend_attach,
-			//parameter for the MPEG2-data transfer 
-			.stream = 
-			{
-				.type = USB_BULK,
-				.count = RTD2831_URB_NUMBER,
-				.endpoint = 0x01,		//data pipe
-				.u = 
-				{
-					.bulk = 
-					{
-						.buffersize = RTD2831_URB_SIZE,
-					}
-				}
-			},
-		}
-	},
-	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
-	//remote control
-	.rc.legacy = {
-		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-		.rc_query         = rtl2832u_rc_query,				//use define quary function
-	},
-	#endif
-	.num_device_descs = 6,
-	.devices = {
 		{ .name = "RTL2832U DVB-T USB DEVICE",
 		  .cold_ids = { NULL, NULL },
 		  .warm_ids = { &rtl2832u_usb_table[6], NULL },
@@ -537,49 +490,6 @@ static struct dvb_usb_device_properties rtl2832u_2nd_properties = {
 		  .cold_ids = { NULL, NULL },
 		  .warm_ids = { &rtl2832u_usb_table[11], NULL },
 		},
-		{ NULL },
-	}
-};
-
-
-
-static struct dvb_usb_device_properties rtl2832u_3th_properties = {
-
-	.num_adapters = 1,
-	.adapter = 
-	{
-		{
-			.streaming_ctrl = rtl2832u_streaming_ctrl,
-			.frontend_attach = rtl2832u_frontend_attach,
-			//parameter for the MPEG2-data transfer 
-			.stream = 
-			{
-				.type = USB_BULK,
-				.count = RTD2831_URB_NUMBER,
-				.endpoint = 0x01,		//data pipe
-				.u = 
-				{
-					.bulk = 
-					{
-						.buffersize = RTD2831_URB_SIZE,
-					}
-				}
-			},
-		}
-	},
-	
-
-	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
-	//remote control
-	.rc.legacy = {
-		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-		.rc_query         = rtl2832u_rc_query,				//use define quary function
-	},
-	#endif
-	.num_device_descs = 9,
-	.devices = {
 		{ .name = "USB DVB-T Device",
 		  .cold_ids = { NULL, NULL },
 		  .warm_ids = { &rtl2832u_usb_table[12], NULL },
@@ -621,46 +531,7 @@ static struct dvb_usb_device_properties rtl2832u_3th_properties = {
 		  .name = "USB DVB-T Device",
 		  .cold_ids = { NULL, NULL },
 		  .warm_ids = { &rtl2832u_usb_table[20], NULL },
-		}
-	}
-};
-
-
-static struct dvb_usb_device_properties rtl2832u_4th_properties = {
-
-	.num_adapters = 1,
-	.adapter = 
-	{
-		{
-			.streaming_ctrl = rtl2832u_streaming_ctrl,
-			.frontend_attach = rtl2832u_frontend_attach,
-			//parameter for the MPEG2-data transfer 
-			.stream = 
-			{
-				.type = USB_BULK,
-				.count = RTD2831_URB_NUMBER,
-				.endpoint = 0x01,		//data pipe
-				.u = 
-				{
-					.bulk = 
-					{
-						.buffersize = RTD2831_URB_SIZE,
-					}
-				}
-			},
-		}
-	},
-	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
-	//remote control
-	.rc.legacy = {
-		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-		.rc_query         = rtl2832u_rc_query,				//use define quary function
-	},
-	#endif	
-	.num_device_descs = 6,
-	.devices = {
+		},
 		{ .name = "USB DVB-T Device",
 		  .cold_ids = { NULL, NULL },
 		  .warm_ids = { &rtl2832u_usb_table[21], NULL },
