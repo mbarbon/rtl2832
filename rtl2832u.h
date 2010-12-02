@@ -104,60 +104,7 @@
 int rtl2832u_remoto_control_initial_setting(struct dvb_usb_device *d);
 #define	USB_EPA_CTL	0x0148
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-//decode
-#define frt0_para1 	0x3c
-#define frt0_para2 	0x20
-#define frt0_para3	0x7f
-#define frt0_para4      0x05
-#define frt0_BITS_NUM 	0x80
-#define frt0_BITS_mask 	0x01
-#define frt0_BITS_mask0	0x00
-#define frt0_BITS_mask1	0x00
-#define frt0_BITS_mask2	0x0f
-#define frt0_BITS_mask3	0xff
-
-#define frt1_para1 0x12
-#define frt1_para3 0x1a
-#define frt1_para2 0x7f
-#define frt1_para4 0x80
-#define frt1_para5 0x01
-#define frt1_para6 0x02
-#define frt1_BITS_NUM 0x80
-#define frt1_para_uc_1 0x81
-#define frt1_para_uc_2 0x82
-#define frt1_BITS_mask0	0x00
-#define frt1_BITS_mask1	0x00
-#define frt1_BITS_mask2	0x7f
-#define frt1_BITS_mask3	0xff
-
-#define frt2_para1  0x0a
-#define frt2_para2  0xFF
-#define frt2_para3  0xb0
-#define frt2_para4  0xc6
-#define frt2_para5  0x30
-#define frt2_para6  0x1b
-#define frt2_para7  0x8f
-#define frt2_para8  0x89
-#define frt2_para9  0x7f
-#define frt2_para10 0x60
-#define frt2_para11 0x38
-#define frt2_para12  0x15
-#define frt2_BITS_NUM	0x80
-#define frt2_BITS_mask0	0x00
-#define frt2_BITS_mask1	0x00
-#define frt2_BITS_mask2	0xff
-#define frt2_BITS_mask3	0xff
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-//			remote control 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-enum protocol_type_for_RT{
-				RT_RC6=0,
-				RT_RC5,
-				RT_NEC,
-				RT_TEST
-};
-// op define	
+// op define
 enum OP{
 	OP_NO	=0,
 	OP_AND	  ,
@@ -188,6 +135,7 @@ enum RTL2832U_RC_STATE{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern struct dvb_frontend * rtl2832u_fe_attach(struct dvb_usb_device *d);
+extern int rtl2832u_rc_query(struct dvb_usb_device *d);
 
 #endif
 

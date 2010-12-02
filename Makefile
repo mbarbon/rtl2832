@@ -10,7 +10,8 @@ dvb-usb-rtl2832u-objs = demod_rtl2832.o	dvbt_demod_base.o \
 			nim_rtl2832_e4000.o tuner_mt2063.o demod_rtl2840.o \
 			tuner_max3543.o nim_rtl2832_mt2063.o \
 			nim_rtl2832_max3543.o nim_rtl2840_mt2063.o \
-			nim_rtl2840_max3543.o qam_demod_base.o qam_nim_base.o
+			nim_rtl2840_max3543.o qam_demod_base.o qam_nim_base.o \
+			rtl2832u_rc.o
 
 obj-m += dvb-usb-rtl2832u.o
 
