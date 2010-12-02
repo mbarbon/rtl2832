@@ -31,7 +31,7 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 static int rtl2832u_remote_control_protocol=RT_use_rc_protocol;
 #define RT_RC_POLLING_INTERVAL_TIME_MS	287				//rc polling interval:default 287mSec	
 
-static struct dvb_usb_rc_key rtl2832u_rc_keys_map_table[] = {// realtek Key map   	
+static struct ir_scancode rtl2832u_rc_keys_map_table[] = {// realtek Key map   	
 		{ 0x0400, KEY_0 },           // 0 
 		{ 0x0401, KEY_1 },           // 1 
 		{ 0x0402, KEY_2 },           // 2 
@@ -556,9 +556,9 @@ static int rtl2832u_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 			////////// map/////////////////////////////////////////////////////////////////////////////////////////////////////
 			for (i = 0; i < ARRAY_SIZE(rtl2832u_rc_keys_map_table); i++) 
 			{
-				if(rtl2832u_rc_keys_map_table[i].scan ==scancode )
+				if(rtl2832u_rc_keys_map_table[i].scancode ==scancode )
 				{
-					*event = rtl2832u_rc_keys_map_table[i].event;
+					*event = rtl2832u_rc_keys_map_table[i].keycode;
 					*state = REMOTE_KEY_PRESSED;
 					deb_rc("%s : map number = %d \n", __FUNCTION__,i);	
 					break;
@@ -726,10 +726,13 @@ static struct dvb_usb_device_properties rtl2832u_1st_properties = {
 	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
 	
 	//remote control
-	.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-	.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-	.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-	.rc_query         = rtl2832u_rc_query,				//use define quary function
+	.rc.legacy = {
+
+		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
+		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
+		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
+		.rc_query         = rtl2832u_rc_query,				//use define quary function
+	},
 	#endif
 	
 	.num_device_descs = 6,
@@ -789,10 +792,12 @@ static struct dvb_usb_device_properties rtl2832u_2nd_properties = {
 	},
 	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
 	//remote control
-	.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-	.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-	.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-	.rc_query         = rtl2832u_rc_query,				//use define quary function
+	.rc.legacy = {
+		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
+		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
+		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
+		.rc_query         = rtl2832u_rc_query,				//use define quary function
+	},
 	#endif
 	.num_device_descs = 6,
 	.devices = {
@@ -854,10 +859,12 @@ static struct dvb_usb_device_properties rtl2832u_3th_properties = {
 
 	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
 	//remote control
-	.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-	.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-	.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-	.rc_query         = rtl2832u_rc_query,				//use define quary function
+	.rc.legacy = {
+		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
+		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
+		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
+		.rc_query         = rtl2832u_rc_query,				//use define quary function
+	},
 	#endif
 	.num_device_descs = 9,
 	.devices = {
@@ -933,10 +940,12 @@ static struct dvb_usb_device_properties rtl2832u_4th_properties = {
 	},
 	#if (RTL2832U_REMOTE_CONTROL_ENABLE == 1) 
 	//remote control
-	.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
-	.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
-	.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
-	.rc_query         = rtl2832u_rc_query,				//use define quary function
+	.rc.legacy = {
+		.rc_interval      = RT_RC_POLLING_INTERVAL_TIME_MS,		
+		.rc_key_map       = rtl2832u_rc_keys_map_table,			//user define key map
+		.rc_key_map_size  = ARRAY_SIZE(rtl2832u_rc_keys_map_table),	//user define key map size	
+		.rc_query         = rtl2832u_rc_query,				//use define quary function
+	},
 	#endif	
 	.num_device_descs = 6,
 	.devices = {
