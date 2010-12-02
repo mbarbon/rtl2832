@@ -1,0 +1,36 @@
+
+static struct ir_scancode rtl2832u_rc_keys_map_table[] = {// realtek Key map   	
+		{ 0x0400, KEY_0 },           // 0
+		{ 0x0401, KEY_1 },           // 1
+		{ 0x0402, KEY_2 },           // 2
+		{ 0x0403, KEY_3 },           // 3
+		{ 0x0404, KEY_4 },           // 4
+		{ 0x0405, KEY_5 },           // 5
+		{ 0x0406, KEY_6 },           // 6
+		{ 0x0407, KEY_7 },           // 7
+		{ 0x0408, KEY_8 },           // 8
+		{ 0x0409, KEY_9 },           // 9
+		{ 0x040c, KEY_POWER },       // POWER
+		{ 0x040e, KEY_MUTE },        // MUTE
+		{ 0x0410, KEY_VOLUMEUP },    // VOL UP
+		{ 0x0411, KEY_VOLUMEDOWN },  // VOL DOWN
+		{ 0x0412, KEY_CHANNELUP },   // CH UP
+		{ 0x0413, KEY_CHANNELDOWN }, // CH DOWN
+		{ 0x0416, KEY_PLAY },        // PLAY
+		{ 0x0417, KEY_RECORD },      // RECORD
+		{ 0x0418, KEY_PLAYPAUSE },   // PAUSE
+		{ 0x0419, KEY_STOP },        // STOP
+		{ 0x041e, KEY_UP},	     // UP
+		{ 0x041f, KEY_DOWN},	     // DOWN
+		{ 0x0420, KEY_LEFT },        // LEFT
+		{ 0x0421, KEY_RIGHT },       // RIGHT
+		{ 0x0422, KEY_ZOOM },        // FULL SCREEN  -->OK
+		{ 0x0447, KEY_AUDIO },       // MY AUDIO
+		{ 0x045b, KEY_MENU},         // RED
+		{ 0x045c, KEY_EPG },         // GREEN
+		{ 0x045d, KEY_FIRST },       // YELLOW
+		{ 0x045e, KEY_LAST },        // BLUE
+		{ 0x045a, KEY_TEXT },        // TEXT TV
+	 	{ 0x0423, KEY_BACK },        // <- BACK
+		{ 0x0414, KEY_FORWARD }    // >>
+	};
