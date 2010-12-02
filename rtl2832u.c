@@ -653,6 +653,9 @@ static struct dvb_usb_device_properties rtl2832u_4th_properties;
 static int rtl2832u_usb_probe(struct usb_interface *intf,
 		const struct usb_device_id *id)
 {
+	if (!intf->altsetting->desc.bNumEndpoints)
+		return -ENODEV;
+
 	if ( ( 0== dvb_usb_device_init(intf,&rtl2832u_1st_properties,THIS_MODULE,NULL,adapter_nr) )||
 		( 0== dvb_usb_device_init(intf,&rtl2832u_2nd_properties,THIS_MODULE,NULL,adapter_nr) ) ||
 		( 0== dvb_usb_device_init(intf,&rtl2832u_3th_properties,THIS_MODULE,NULL,adapter_nr) ) ||
