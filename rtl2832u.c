@@ -25,8 +25,8 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 //#endif
 
 //enable /disable rc 
-#define RTL2832U_REMOTE_CONTROL_ENABLE       	0x00
-#define RT_use_rc_protocol 			0	
+#define RTL2832U_REMOTE_CONTROL_ENABLE       	1
+#define RT_use_rc_protocol 			RT_NEC	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static int rtl2832u_remote_control_protocol=RT_use_rc_protocol;
 #define RT_RC_POLLING_INTERVAL_TIME_MS	287				//rc polling interval:default 287mSec	
