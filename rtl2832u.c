@@ -143,12 +143,15 @@ static struct dvb_usb_device_properties rtl2832u_properties = {
 		.protocol         = IR_TYPE_OTHER,
 		.module_name      = "rtl2832",
 		.rc_query         = rtl2832u_rc_query,
-		.rc_interval      = 287,
+		.rc_interval      = 500,
 
 		.rc_props = {
 			.open = rtl2832u_rc_open,
 			.driver_type = RC_DRIVER_IR_RAW,
 			.allowed_protos = IR_TYPE_ALL,
+			//.max_timeout = 10000 * 1000,
+			//.min_timeout = 1     * 1000,
+			//.timeout     = 10000 * 1000,
 			
 		}
 	},

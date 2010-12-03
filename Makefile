@@ -26,7 +26,7 @@ KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 #KERNELDIR = /lib/modules/2.6.32-18-generic/build
 
 
-
+all: build install
 
 build:
 	$(MAKE) -C $(KERNELDIR) M=$(shell pwd)
@@ -37,6 +37,6 @@ clean:
 
 
 install:
-	$(MAKE) -C $(KERNELDIR) M=$(shell pwd) modules_install
-	depmod -a
+	sudo $(MAKE) -C $(KERNELDIR) M=$(shell pwd) modules_install
+	sudo depmod -a
 

@@ -3,7 +3,7 @@
 #include "rtl2832u_io.h"
 #include <linux/time.h>
 
-#define ERROR_TRY_MAX_NUM		4
+#define ERROR_TRY_MAX_NUM	4
 
 
 #define	DUMMY_PAGE		0x0a
@@ -21,35 +21,28 @@ platform_wait(
 		usec = (nMinDelayTime > 8000) ? 8000 : nMinDelayTime;
 		msleep(usec);
 		nMinDelayTime -= usec;
-		} while (nMinDelayTime > 0);
+	} while (nMinDelayTime > 0);
 
 	return;
 	
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		remote control 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static int 
-read_rc_register(
-	struct dvb_usb_device*	dib,
-	unsigned short	offset,
-	unsigned char*	data,
-	unsigned short	bytelength)
+
+static int __read_rc_register(struct dvb_usb_device* dib, u16 offset,
+	u8* data, u16 bytelength)
 {
 	int ret = -ENOMEM;
  
-        ret = usb_control_msg(dib->udev,								/* pointer to device */
-                usb_rcvctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),					/* pipe to control endpoint */
-                0,											/* USB message request value */
-                SKEL_VENDOR_IN,										/* USB message request type value */
-                offset,											/* USB message value */
-                0x0201,											/* USB message index value */
-                data,											/* pointer to the receive buffer */
-                bytelength,										/* length of the buffer */
-                DIBUSB_I2C_TIMEOUT);									/* time to wait for the message to complete before timing out */
+        ret = usb_control_msg(dib->udev,				/* pointer to device */
+                usb_rcvctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),	/* pipe to control endpoint */
+                0,							/* USB message request value */
+                SKEL_VENDOR_IN,						/* USB message request type value */
+                offset,							/* USB message value */
+                0x0201,							/* USB message index value */
+                data,							/* pointer to the receive buffer */
+                bytelength,						/* length of the buffer */
+                DIBUSB_I2C_TIMEOUT);					/* time to wait for the message to complete before timing out */
  	
-        if (ret != bytelength)
-	{
+        if (ret != bytelength) {
 		deb_info(" error try rc read register %s: offset=0x%x, error code=0x%x !\n", __FUNCTION__, offset, ret);
 		return 1;
        	}
@@ -59,36 +52,34 @@ read_rc_register(
 
 
 
-static int 
-write_rc_register(
-	struct dvb_usb_device*	dib,
-	unsigned short	offset,
-	unsigned char*	data,
-	unsigned short	bytelength)
+static int __write_rc_register(struct dvb_usb_device*	dib,
+	u16 offset, u8*	data, u16 bytelength)
 {
 	int ret = -ENOMEM;
-	unsigned char try_num;
+	u8 try_num;
 
 	try_num = 0;	
 error_write_again:
 	try_num++;	
  
-        ret = usb_control_msg(dib->udev,								/* pointer to device */
-                usb_sndctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),					/* pipe to control endpoint */
-                0,											/* USB message request value */
-                SKEL_VENDOR_OUT,									/* USB message request type value */
-                offset,											/* USB message value */
-                0x0211,											/* USB message index value */
-                data,											/* pointer to the receive buffer */
-                bytelength,										/* length of the buffer */
-                DIBUSB_I2C_TIMEOUT);									/* time to wait for the message to complete before timing out */
+        ret = usb_control_msg(dib->udev,				/* pointer to device */
+                usb_sndctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),	/* pipe to control endpoint */
+                0,							/* USB message request value */
+                SKEL_VENDOR_OUT,					/* USB message request type value */
+                offset,							/* USB message value */
+                0x0211,							/* USB message index value */
+                data,							/* pointer to the receive buffer */
+                bytelength,						/* length of the buffer */
+                DIBUSB_I2C_TIMEOUT);					/* time to wait for the message to complete before timing out */
 
         if (ret != bytelength)
 	{
 		deb_info("error try rc write register  = %d, %s: offset=0x%x, error code=0x%x !\n",try_num ,__FUNCTION__, offset, ret);
 
-		if( try_num > ERROR_TRY_MAX_NUM )	goto error;
-		else				goto error_write_again;
+		if( try_num > ERROR_TRY_MAX_NUM )
+			goto error;
+		else
+			goto error_write_again;
        }
 
 	return 0;
@@ -97,96 +88,59 @@ error:
  }
 
 
-int
-read_rc_char_bytes(
-	struct dvb_usb_device*	dib,
-	RegType	type,
-	unsigned short	byte_addr,
-	unsigned char*	buf,
-	unsigned short	byte_num)
+int read_rc_register(struct dvb_usb_device* dib, RegType type,
+	u16 byte_addr, u8* buf, u16 len)
 {
 	int ret = 1;
 
-	if( byte_num != 1 && byte_num !=2 && byte_num !=4 && byte_num != 0x80)
-	{
-		deb_info("error!! %s: length = %d \n", __FUNCTION__, byte_num);
-		return 1;
-	}
-
-
 	if( mutex_lock_interruptible(&dib->usb_mutex) )	return 1;
 	
-	if (type == RTD2832U_RC )	
-		ret = read_rc_register( dib , byte_addr , buf , byte_num);
+	if (type == RTD2832U_RC )
+		ret = __read_rc_register( dib , byte_addr , buf , len);
 	else
-	{
 		deb_info("error!! %s: erroe register type \n", __FUNCTION__);
-		return 1;
-	}				
+
 	mutex_unlock(&dib->usb_mutex);
-
-	return ret;
-	
+	return ret;	
 }
 
 
-
-int
-write_rc_char_bytes(
-	struct dvb_usb_device*	dib,
-	RegType	type,
-	unsigned short	byte_addr,
-	unsigned char*	buf,
-	unsigned short	byte_num)
+int write_rc_register(struct dvb_usb_device* dib, RegType type,
+	u16	byte_addr, u8* buf, u16 len)
 {
 	int ret = 1;
 
-	if( byte_num != 1 && byte_num !=2 && byte_num !=4 && byte_num !=0x80)
-	{
-		deb_info("error!! %s: length = %d \n", __FUNCTION__, byte_num);
-		return 1;
-	}
-
 	if( mutex_lock_interruptible(&dib->usb_mutex) )	return 1;
 	
-	if (type == RTD2832U_RC )	
-		ret = write_rc_register( dib , byte_addr , buf , byte_num);
+	if (type == RTD2832U_RC )
+		ret = __write_rc_register( dib , byte_addr , buf , len);
 	else
-	{
 		deb_info("error!! %s: erroe register type \n", __FUNCTION__);
-		ret=1;
-	}	
+
 	mutex_unlock(&dib->usb_mutex);	
-	
 	return ret;
 	
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static int 
-read_usb_register(
-	struct dvb_usb_device*	dib,
-	unsigned short	offset,
-	unsigned char*	data,
-	unsigned short	bytelength)
+static int read_usb_register(struct dvb_usb_device* dib, u16	offset,
+	u8*	data, u16 bytelength)
 {
 	int ret = -ENOMEM;
  
-        ret = usb_control_msg(dib->udev,								/* pointer to device */
-                usb_rcvctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),			/* pipe to control endpoint */
-                0,														/* USB message request value */
-                SKEL_VENDOR_IN,										/* USB message request type value */
-                (USB_BASE_ADDRESS<<8) + offset,						/* USB message value */
-                0x0100,													/* USB message index value */
-                data,													/* pointer to the receive buffer */
-                bytelength,												/* length of the buffer */
-                DIBUSB_I2C_TIMEOUT);									/* time to wait for the message to complete before timing out */
+        ret = usb_control_msg(dib->udev,				/* pointer to device */
+                usb_rcvctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),	/* pipe to control endpoint */
+                0,			/* USB message request value */
+                SKEL_VENDOR_IN,		/* USB message request type value */
+                (USB_BASE_ADDRESS<<8) + offset,	/* USB message value */
+                0x0100,			/* USB message index value */
+                data,			/* pointer to the receive buffer */
+                bytelength,		/* length of the buffer */
+                DIBUSB_I2C_TIMEOUT);	/* time to wait for the message to complete before timing out */
  	
-        if (ret != bytelength)
-	{
+        if (ret != bytelength) {
 		deb_info(" %s: offset=0x%x, error code=0x%x !\n", __FUNCTION__, offset, ret);
 		return 1;
-       }
+	}
 
 	return 0; 
 }
@@ -195,27 +149,24 @@ read_usb_register(
 
 static int 
 write_usb_register(
-	struct dvb_usb_device*	dib,
-	unsigned short	offset,
-	unsigned char*	data,
-	unsigned short	bytelength)
+	struct dvb_usb_device*	dib,u16 offset, u8* data, u16 bytelength)
 {
 	int ret = -ENOMEM;
-	unsigned char try_num;
+	u8 try_num;
 
 	try_num = 0;	
 error_write_again:
-	try_num++;	
+	try_num++;
  
-        ret = usb_control_msg(dib->udev,								/* pointer to device */
-                usb_sndctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),		/* pipe to control endpoint */
-                0,														/* USB message request value */
-                SKEL_VENDOR_OUT,										/* USB message request type value */
-                (USB_BASE_ADDRESS<<8) + offset,						/* USB message value */
-                0x0110,													/* USB message index value */
-                data,													/* pointer to the receive buffer */
-                bytelength,												/* length of the buffer */
-                DIBUSB_I2C_TIMEOUT);									/* time to wait for the message to complete before timing out */
+        ret = usb_control_msg(dib->udev,		/* pointer to device */
+                usb_sndctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),	/* pipe to control endpoint */
+                0,					/* USB message request value */
+                SKEL_VENDOR_OUT,			/* USB message request type value */
+                (USB_BASE_ADDRESS<<8) + offset,		/* USB message value */
+                0x0110,					/* USB message index value */
+                data,					/* pointer to the receive buffer */
+                bytelength,			/* length of the buffer */
+                DIBUSB_I2C_TIMEOUT);		/* time to wait for the message to complete before timing out */
 
         if (ret != bytelength)
 	{
@@ -236,9 +187,9 @@ error:
 static int 
 read_sys_register(
 	struct dvb_usb_device*	dib,
-	unsigned short	offset,
-	unsigned char*	data,
-	unsigned short	bytelength)
+	u16	offset,
+	u8*	data,
+	u16	bytelength)
 {
 	int ret = -ENOMEM;
  
@@ -266,12 +217,12 @@ read_sys_register(
 static int 
 write_sys_register(
 	struct dvb_usb_device*	dib,
-	unsigned short	offset,
-	unsigned char*	data,
-	unsigned short	bytelength)
+	u16	offset,
+	u8*	data,
+	u16	bytelength)
 { 
 	int ret = -ENOMEM;
-	unsigned char try_num;
+	u8 try_num;
 
 	try_num = 0;	
 error_write_again:	
@@ -305,15 +256,15 @@ error:
 int 
 read_demod_register(
 	struct dvb_usb_device*dib,
-	unsigned char			demod_device_addr,	
-	unsigned char 		page,
-	unsigned char 		offset,
-	unsigned char*		data,
-	unsigned short		bytelength)
+	u8			demod_device_addr,
+	u8 		page,
+	u8 		offset,
+	u8*		data,
+	u16		bytelength)
 {
 	int ret = -ENOMEM;
 	int i;
-	unsigned char	tmp;
+	u8	tmp;
 
 	if( mutex_lock_interruptible(&dib->usb_mutex) )	goto error;
 
@@ -322,7 +273,7 @@ read_demod_register(
                 0,														/* USB message request value */
                 SKEL_VENDOR_IN,										/* USB message request type value */
                 demod_device_addr + (offset<<8),						/* USB message value */
-                (0x0000 + page),										/* USB message index value */
+                (0x0000 + page),			/* USB message index value */
                 data,													/* pointer to the receive buffer */
                 bytelength,												/* length of the buffer */
                 DIBUSB_I2C_TIMEOUT);									/* time to wait for the message to complete before timing out */
@@ -368,15 +319,15 @@ error:
 int
 write_demod_register(
 	struct dvb_usb_device*dib,
-	unsigned char			demod_device_addr,		
-	unsigned char			page,
-	unsigned char			offset,
-	unsigned char			*data,
-	unsigned short		bytelength)
+	u8			demod_device_addr,
+	u8			page,
+	u8			offset,
+	u8			*data,
+	u16		bytelength)
 {
 	int ret = -ENOMEM;
-	unsigned char  i, try_num;
-	unsigned char	tmp;	
+	u8  i, try_num;
+	u8	tmp;
 
 	try_num = 0;	
 error_write_again:	
@@ -439,14 +390,14 @@ error:
 int 
 read_rtl2832_tuner_register(
 	struct dvb_usb_device	*dib,
-	unsigned char			device_address,
-	unsigned char			offset,
-	unsigned char			*data,
-	unsigned short		bytelength)
+	u8			device_address,
+	u8			offset,
+	u8			*data,
+	u16		bytelength)
 {
 	int ret = -ENOMEM;
  	int i;
-	unsigned char data_tmp[128];	
+	u8 data_tmp[128];
 
 
 	if( mutex_lock_interruptible(&dib->usb_mutex) )	goto error;
@@ -490,13 +441,13 @@ error:
 
 int write_rtl2832_tuner_register(
 	struct dvb_usb_device *dib,
-	unsigned char			device_address,
-	unsigned char			offset,
-	unsigned char			*data,
-	unsigned short		bytelength)
+	u8			device_address,
+	u8			offset,
+	u8			*data,
+	u16		bytelength)
 {
 	int ret = -ENOMEM;
-	unsigned char  i, try_num;
+	u8  i, try_num;
 
 	try_num = 0;	
 error_write_again:	
@@ -545,14 +496,14 @@ error:
 int
 read_rtl2832_stdi2c(
 	struct dvb_usb_device*	dib,
-	unsigned short			dev_i2c_addr,
-	unsigned char*			data,
-	unsigned short			bytelength)
+	u16			dev_i2c_addr,
+	u8*			data,
+	u16			bytelength)
 {
 	int i;
 	int ret = -ENOMEM;
-	unsigned char  try_num;
-	unsigned char data_tmp[128];	
+	u8  try_num;
+	u8 data_tmp[128];
 
 	try_num = 0;	
 error_write_again:		
@@ -567,15 +518,15 @@ error_write_again:
 
 	if( mutex_lock_interruptible(&dib->usb_mutex) )	goto error;
 	
-	ret = usb_control_msg(dib->udev,								/* pointer to device */
-		usb_rcvctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),			/* pipe to control endpoint */
-		0,														/* USB message request value */
-		SKEL_VENDOR_IN,											/* USB message request type value */
-		dev_i2c_addr,											/* USB message value */
-		0x0600,													/* USB message index value */
-		data_tmp,												/* pointer to the receive buffer */
-		bytelength,												/* length of the buffer */
-		DIBUSB_I2C_TIMEOUT);									/* time to wait for the message to complete before timing out */
+	ret = usb_control_msg(dib->udev,	/* pointer to device */
+		usb_rcvctrlpipe( dib->udev,RTL2832_CTRL_ENDPOINT),	/* pipe to control endpoint */
+		0,				/* USB message request value */
+		SKEL_VENDOR_IN,			/* USB message request type value */
+		dev_i2c_addr,			/* USB message value */
+		0x0600,				/* USB message index value */
+		data_tmp,			/* pointer to the receive buffer */
+		bytelength,			/* length of the buffer */
+		DIBUSB_I2C_TIMEOUT);		/* time to wait for the message to complete before timing out */
 
 	mutex_unlock(&dib->usb_mutex);
  
@@ -603,13 +554,13 @@ error:
 int 
 write_rtl2832_stdi2c(
 	struct dvb_usb_device*	dib,
-	unsigned short			dev_i2c_addr,
-	unsigned char*			data,
-	unsigned short			bytelength)
+	u16			dev_i2c_addr,
+	u8*			data,
+	u16			bytelength)
 {
 	int i;
 	int ret = -ENOMEM;  
-	unsigned char  try_num;
+	u8  try_num;
 
 	try_num = 0;	
 error_write_again:		
@@ -659,15 +610,15 @@ int
 read_usb_sys_char_bytes(
 	struct dvb_usb_device*	dib,
 	RegType	type,
-	unsigned short	byte_addr,
-	unsigned char*	buf,
-	unsigned short	byte_num)
+	u16	byte_addr,
+	u8*	buf,
+	u16	len)
 {
 	int ret = 1;
 
-	if( byte_num != 1 && byte_num !=2 && byte_num !=4)
+	if( len != 1 && len !=2 && len !=4)
 	{
-		deb_info("error!! %s: length = %d \n", __FUNCTION__, byte_num);
+		deb_info("error!! %s: length = %d \n", __FUNCTION__, len);
 		return 1;
 	}
 
@@ -676,11 +627,11 @@ read_usb_sys_char_bytes(
 		
 	if( type == RTD2832U_USB )
 	{
-		ret = read_usb_register( dib , byte_addr , buf , byte_num);
+		ret = read_usb_register( dib , byte_addr , buf , len);
 	}
 	else if ( type == RTD2832U_SYS )
 	{
-		ret = read_sys_register( dib , byte_addr , buf , byte_num);
+		ret = read_sys_register( dib , byte_addr , buf , len);
 	}
 	
 	mutex_unlock(&dib->usb_mutex);
@@ -695,15 +646,15 @@ int
 write_usb_sys_char_bytes(
 	struct dvb_usb_device*	dib,
 	RegType	type,
-	unsigned short	byte_addr,
-	unsigned char*	buf,
-	unsigned short	byte_num)
+	u16	byte_addr,
+	u8*	buf,
+	u16	len)
 {
 	int ret = 1;
 
-	if( byte_num != 1 && byte_num !=2 && byte_num !=4)
+	if( len != 1 && len !=2 && len !=4)
 	{
-		deb_info("error!! %s: length = %d \n", __FUNCTION__, byte_num);
+		deb_info("error!! %s: length = %d \n", __FUNCTION__, len);
 		return 1;
 	}
 
@@ -711,11 +662,11 @@ write_usb_sys_char_bytes(
 	
 	if( type == RTD2832U_USB )
 	{
-		ret = write_usb_register( dib , byte_addr , buf , byte_num);
+		ret = write_usb_register( dib , byte_addr , buf , len);
 	}
 	else if ( type == RTD2832U_SYS )
 	{
-		ret = write_sys_register( dib , byte_addr , buf , byte_num);
+		ret = write_sys_register( dib , byte_addr , buf , len);
 	}
 	
 	mutex_unlock(&dib->usb_mutex);	
@@ -730,8 +681,8 @@ int
 read_usb_sys_int_bytes(
 	struct dvb_usb_device*	dib,
 	RegType	type,
-	unsigned short	byte_addr,
-	unsigned short	n_bytes,
+	u16	byte_addr,
+	u16	n_bytes,
 	int*	p_val)
 {
 	int	i;
@@ -760,8 +711,8 @@ int
 write_usb_sys_int_bytes(
 	struct dvb_usb_device*	dib,
 	RegType	type,
-	unsigned short	byte_addr,
-	unsigned short	n_bytes,
+	u16	byte_addr,
+	u16	n_bytes,
 	int	val)
 {
 	int	i;
@@ -786,14 +737,14 @@ error:
 int
 write_rtl2836_demod_register(
 	struct dvb_usb_device* dib,
-	unsigned char			demod_device_addr,		
-	unsigned char			page,
-	unsigned char			offset,
-	unsigned char			*data,
-	unsigned short		bytelength)
+	u8			demod_device_addr,
+	u8			page,
+	u8			offset,
+	u8			*data,
+	u16		bytelength)
 {
 	int i;
-	unsigned char           datatmp;
+	u8           datatmp;
 	int                            try_num;
 	switch(page)
 	{
@@ -847,15 +798,15 @@ error:
 int 
 read_rtl2836_demod_register(
 	struct dvb_usb_device*dib,
-	unsigned char			demod_device_addr,	
-	unsigned char 		page,
-	unsigned char 		offset,
-	unsigned char*		data,
-	unsigned short		bytelength)
+	u8			demod_device_addr,
+	u8 		page,
+	u8 		offset,
+	u8*		data,
+	u16		bytelength)
 {
 
        int i;
-	unsigned char  tmp;
+	u8  tmp;
 		
 	switch(page)
 	{
