@@ -138,9 +138,10 @@ static struct dvb_usb_device_properties rtl2832u_properties = {
 		}
 	},
 
+#if 0
 	.rc.core = {
 		.rc_codes         = RC_MAP_EMPTY,
-		.protocol         = IR_TYPE_OTHER,
+		.protocol         = RC_TYPE_OTHER,
 		.module_name      = "rtl2832",
 		.rc_query         = rtl2832u_rc_query,
 		.rc_interval      = 500,
@@ -155,7 +156,7 @@ static struct dvb_usb_device_properties rtl2832u_properties = {
 			
 		}
 	},
-
+#endif
 	
 	.num_device_descs = 27,
 	.devices = {
