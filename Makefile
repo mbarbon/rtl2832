@@ -1,7 +1,13 @@
-EXTRA_CFLAGS += -I$(KBUILD_SRC)/drivers/media/dvb/dvb-usb/ \
+NOSTDINC_FLAGS := -I$(KBUILD_SRC)/drivers/media/dvb/dvb-usb/ \
 		-I$(KBUILD_SRC)/drivers/media/dvb/dvb-core/ \
 		-I$(KBUILD_SRC)/drivers/media/dvb/frontends/ \
 		-I$(KBUILD_SRC)/drivers/media/common/tuners \
+		-I$(M) \
+		-I$(M)/tuners \
+		-I$(M)/dtmb \
+		-I$(M)/dvbc \
+		-I$(M)/dvbt
+
 
 
 obj-y += dtmb/
@@ -9,13 +15,13 @@ obj-y += dvbc/
 obj-y += dvbt/
 obj-y += tuners/
 
-dvb-usb-rtl2832u-objs += dtmb/rtl2832-dtmb.o \
-			 dvbc/rtl2832-dvbc.o \
-			 dvbt/rtl2832-dvbt.o \
-			 tuners/rtl2832-tuners.o \
-			 foundation.c  math_mpi.c \
-			 rtl2832u.c     rtl2832u_io.c \
-			 rtl2832u_fe.c  rtl2832u_rc.c
+dvb-usb-rtl2832u-objs += dtmb/built-in.o \
+			 dvbc/built-in.o \
+			 dvbt/built-in.o \
+			 tuners/built-in.o \
+			 foundation.o  math_mpi.o \
+			 rtl2832u.o     rtl2832u_io.o \
+			 rtl2832u_fe.o  rtl2832u_rc.o
 
 obj-m += dvb-usb-rtl2832u.o
 
