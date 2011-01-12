@@ -8,22 +8,20 @@ NOSTDINC_FLAGS := -I$(KBUILD_SRC)/drivers/media/dvb/dvb-usb/ \
 		-I$(M)/dvbc \
 		-I$(M)/dvbt
 
-
-
 obj-y += dtmb/
 obj-y += dvbc/
 obj-y += dvbt/
 obj-y += tuners/
 
-dvb-usb-rtl2832u-objs += dtmb/built-in.o \
-			 dvbc/built-in.o \
-			 dvbt/built-in.o \
-			 tuners/built-in.o \
-			 foundation.o  math_mpi.o \
-			 rtl2832u.o     rtl2832u_io.o \
-			 rtl2832u_fe.o  rtl2832u_rc.o
+rtl2832u-objs += dtmb/built-in.o \
+		 dvbc/built-in.o \
+		 dvbt/built-in.o \
+		 tuners/built-in.o \
+		 foundation.o  math_mpi.o \
+		 rtl2832u.o     rtl2832u_io.o \
+		 rtl2832u_fe.o  rtl2832u_rc.o
 
-obj-m += dvb-usb-rtl2832u.o
+obj-m += rtl2832u.o
 
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build
@@ -41,4 +39,3 @@ clean:
 install:
 	sudo $(MAKE) -C $(KERNELDIR) M=$(shell pwd) modules_install
 	sudo depmod -a
-

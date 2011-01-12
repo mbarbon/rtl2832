@@ -6,7 +6,7 @@
 #include "rtl2832u_io.h"
 
 
-int dvb_usb_rtl2832u_debug =1;
+int dvb_usb_rtl2832u_debug = 0;
 module_param_named(debug,dvb_usb_rtl2832u_debug, int, 0644);
 MODULE_PARM_DESC(debug, "Set debugging level (1=info,xfer=2 (or-able))." DVB_USB_DEBUG_STATUS);
 
@@ -20,9 +20,7 @@ module_param_named(dtmb_err_discard, dtmb_error_packet_discard, int, 0644);
 MODULE_PARM_DESC(dtmb_err_discard, "Set error packet discard type(0=not discard, 1=discard)"DVB_USB_DEBUG_STATUS);
 
 
-//#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
-//#endif
 
 static int rtl2832u_streaming_ctrl(struct dvb_usb_adapter *adap , int onoff)
 {
@@ -63,7 +61,6 @@ static void rtl2832u_usb_disconnect(struct usb_interface *intf)
 static struct dvb_usb_device_properties rtl2832u_properties;
 
 
-//#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
 static int rtl2832u_usb_probe(struct usb_interface *intf,
 		const struct usb_device_id *id)
 {
@@ -315,9 +312,6 @@ static void __exit rtl2832u_usb_module_exit(void)
 module_init(rtl2832u_usb_module_init);
 module_exit(rtl2832u_usb_module_exit);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Remake : base on linux kernel :2.6.32  ubuntu 10.04 	Test						//	
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MODULE_AUTHOR("Realtek");
 MODULE_DESCRIPTION("Driver for the RTL2832U DVB-T / RTL2836 DTMB USB2.0 device");
