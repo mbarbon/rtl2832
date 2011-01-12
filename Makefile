@@ -18,7 +18,7 @@ rtl2832u-objs += dtmb/built-in.o \
 		 dvbt/built-in.o \
 		 tuners/built-in.o \
 		 foundation.o  math_mpi.o \
-		 rtl2832u.o     rtl2832u_io.o \
+		 main.o     rtl2832u_io.o \
 		 rtl2832u_fe.o  rtl2832u_rc.o
 
 obj-m += rtl2832u.o
