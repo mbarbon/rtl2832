@@ -7,7 +7,7 @@
 DTMB demod default functions.
 
 */
-#include "rtl2832u_io.h"
+#include "../rtl2832u_io.h"
 #include "dtmb_demod_base.h"
 
 
