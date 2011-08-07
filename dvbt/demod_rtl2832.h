@@ -49,7 +49,7 @@ int main(void)
 		CRYSTAL_FREQ_28800000HZ,			// Crystal frequency is 28.8 MHz.
 		TS_INTERFACE_SERIAL,				// TS interface mode is serial.
 		RTL2832_APPLICATION_STB,			// Application mode is STB.
-		50,									// Update function reference period is 50 millisecond
+		200,								// Update function reference period is 200 millisecond
 		YES									// Function 1 enabling status is YES.
 		);
 

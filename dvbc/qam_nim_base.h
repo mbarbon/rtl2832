@@ -706,17 +706,31 @@ struct RTL2840_MT2063_EXTRA_MODULE_TAG
 
 
 
+// RTD2840B QAM MT2062 extra module
+typedef struct RTD2840B_QAM_MT2062_EXTRA_MODULE_TAG RTD2840B_QAM_MT2062_EXTRA_MODULE;
+struct RTD2840B_QAM_MT2062_EXTRA_MODULE_TAG
+{
+	// Extra variables
+	unsigned long IfFreqHz;
+};
+
+
+
+
+
 /// QAM NIM module structure
 struct QAM_NIM_MODULE_TAG
 {
 	// Private variables
 	int NimType;
 	int EnhancementMode;
+	int ConfigMode;
 
 	union														///<   NIM extra module used by driving module
 	{
 		RTL2840_MT2062_EXTRA_MODULE Rtl2840Mt2062;
 		RTL2840_MT2063_EXTRA_MODULE Rtl2840Mt2063;
+		RTD2840B_QAM_MT2062_EXTRA_MODULE  Rtd2840bQamMt2062;
 	}
 	Extra;
 

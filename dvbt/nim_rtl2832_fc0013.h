@@ -1,14 +1,14 @@
-#ifndef __NIM_RTL2832_MAX3543
-#define __NIM_RTL2832_MAX3543
+#ifndef __NIM_RTL2832_FC0013
+#define __NIM_RTL2832_FC0013
 
 /**
 
 @file
 
-@brief   RTL2832 MAX3543 NIM module declaration
+@brief   RTL2832 FC0013 NIM module declaration
 
-One can manipulate RTL2832 MAX3543 NIM through RTL2832 MAX3543 NIM module.
-RTL2832 MAX3543 NIM module is derived from DVB-T NIM module.
+One can manipulate RTL2832 FC0013 NIM through RTL2832 FC0013 NIM module.
+RTL2832 FC0013 NIM module is derived from DVB-T NIM module.
 
 
 
@@ -19,7 +19,7 @@ RTL2832 MAX3543 NIM module is derived from DVB-T NIM module.
 
 
 
-#include "nim_rtl2832_max3543.h"
+#include "nim_rtl2832_fc0013.h"
 
 
 ...
@@ -35,8 +35,8 @@ int main(void)
 
 
 
-	// Build RTL2832 MAX3543 NIM module.
-	BuildRtl2832Max3543Module(
+	// Build RTL2832 FC0013 NIM module.
+	BuildRtl2832Fc0013Module(
 		&pNim,
 		&DvbtNimModuleMemory,
 
@@ -53,8 +53,8 @@ int main(void)
 		200,							// The RTL2832 update function reference period is 200 millisecond
 		YES,							// The RTL2832 Function 1 enabling status is YES.
 
-		0xc0,							// The MAX3543 I2C device address is 0xc0 in 8-bit format.
-		CRYSTAL_FREQ_16000000HZ			// The MAX3543 Crystal frequency is 16.0 MHz.
+		0xc6,							// The FC0013 I2C device address is 0xc6 in 8-bit format.
+		CRYSTAL_FREQ_28800000HZ			// The FC0013 crystal frequency is 28.8 MHz.
 		);
 
 
@@ -74,7 +74,7 @@ int main(void)
 
 
 #include "demod_rtl2832.h"
-#include "tuner_max3543.h"
+#include "tuner_fc0013.h"
 #include "dvbt_nim_base.h"
 
 
@@ -82,13 +82,8 @@ int main(void)
 
 
 // Definitions
-#define RTL2832_MAX3543_ADDITIONAL_INIT_REG_TABLE_LEN		23
-
-// Default
-#define RTL2832_MAX3543_STANDARD_MODE_DEFAULT				MAX3543_STANDARD_DVBT
-#define RTL2832_MAX3543_IF_FREQ_HZ_DEFAULT					IF_FREQ_36170000HZ
-#define RTL2832_MAX3543_SPECTRUM_MODE_DEFAULT				SPECTRUM_INVERSE
-#define RTL2832_MAX3543_SAW_INPUT_TYPE_DEFAULT				MAX3543_SAW_INPUT_SE
+#define RTL2832_FC0013_ADDITIONAL_INIT_REG_TABLE_LEN		29
+#define RTL2832_FC0013_LNA_UPDATE_WAIT_TIME_MS				1000
 
 
 
@@ -96,7 +91,7 @@ int main(void)
 
 // Builder
 void
-BuildRtl2832Max3543Module(
+BuildRtl2832Fc0013Module(
 	DVBT_NIM_MODULE **ppNim,							// DVB-T NIM dependence
 	DVBT_NIM_MODULE *pDvbtNimModuleMemory,
 
@@ -121,17 +116,32 @@ BuildRtl2832Max3543Module(
 
 
 
-// RTL2832 MAX3543 NIM manipulaing functions
+// RTL2832 FC0013 NIM manipulaing functions
 int
-rtl2832_max3543_Initialize(
+rtl2832_fc0013_Initialize(
 	DVBT_NIM_MODULE *pNim
 	);
 
 int
-rtl2832_max3543_SetParameters(
+rtl2832_fc0013_SetParameters(
 	DVBT_NIM_MODULE *pNim,
 	unsigned long RfFreqHz,
 	int BandwidthMode
+	);
+
+int
+rtl2832_fc0013_UpdateFunction(
+	DVBT_NIM_MODULE *pNim
+	);
+
+int
+rtl2832_fc0013_GetTunerRssiCalOn(
+	DVBT_NIM_MODULE *pNim
+	);
+
+int
+rtl2832_fc0013_UpdateTunerLnaGainWithRssi(
+	DVBT_NIM_MODULE *pNim
 	);
 
 

@@ -169,9 +169,6 @@ rtl2832_mt2266_UpdateFunction(
 
 
 // Additional definition for mt_control.c
-//typedef unsigned char    uint8_t;
-//typedef unsigned short   uint16_t;
-//typedef unsigned long    uint32_t;
 typedef void *           handle_t;
 
 #define MT2266_DEMOD_ASSUMED_AGC_REG_BIT_NUM		16
@@ -211,14 +208,14 @@ typedef void *           handle_t;
 UData_t
 demod_get_pd(
 	handle_t demod_handle,
-	uint16_t *pd_value
+	unsigned short *pd_value
 	);
 
 UData_t
 demod_get_agc(
 	handle_t demod_handle,
-	uint16_t *rf_level,
-	uint16_t *bb_level
+	unsigned short *rf_level,
+	unsigned short *bb_level
 	);
 
 UData_t
@@ -243,17 +240,17 @@ UData_t
 demod_pdcontrol_reset(
 	handle_t demod_handle,
 	handle_t tuner_handle,
-	uint8_t *agc_current_state
+	unsigned char *agc_current_state
 	);
 
 UData_t
 demod_pdcontrol(
 	handle_t demod_handle,
 	handle_t tuner_handle,
-	uint8_t* lna_config,
-	uint8_t* uhf_sens,
-	uint8_t *agc_current_state,
-	uint32_t *lna_gain_old
+	unsigned char* lna_config,
+	unsigned char* uhf_sens,
+	unsigned char *agc_current_state,
+	unsigned long *lna_gain_old
 	);
 
 

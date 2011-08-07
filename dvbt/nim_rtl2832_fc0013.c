@@ -2,15 +2,15 @@
 
 @file
 
-@brief   RTL2832 FC0012 NIM module definition
+@brief   RTL2832 FC0013 NIM module definition
 
-One can manipulate RTL2832 FC0012 NIM through RTL2832 FC0012 NIM module.
-RTL2832 FC0012 NIM module is derived from DVB-T NIM module.
+One can manipulate RTL2832 FC0013 NIM through RTL2832 FC0013 NIM module.
+RTL2832 FC0013 NIM module is derived from DVB-T NIM module.
 
 */
 
 
-#include "nim_rtl2832_fc0012.h"
+#include "nim_rtl2832_fc0013.h"
 
 
 
@@ -18,13 +18,13 @@ RTL2832 FC0012 NIM module is derived from DVB-T NIM module.
 
 /**
 
-@brief   RTL2832 FC0012 NIM module builder
+@brief   RTL2832 FC0013 NIM module builder
 
-Use BuildRtl2832Fc0012Module() to build RTL2832 FC0012 NIM module, set all module function pointers with the
+Use BuildRtl2832Fc0013Module() to build RTL2832 FC0013 NIM module, set all module function pointers with the
 corresponding functions, and initialize module private variables.
 
 
-@param [in]   ppNim                        Pointer to RTL2832 FC0012 NIM module pointer
+@param [in]   ppNim                        Pointer to RTL2832 FC0013 NIM module pointer
 @param [in]   pDvbtNimModuleMemory         Pointer to an allocated DVB-T NIM module memory
 @param [in]   I2cReadingByteNumMax         Maximum I2C reading byte number for basic I2C reading function
 @param [in]   I2cWritingByteNumMax         Maximum I2C writing byte number for basic I2C writing function
@@ -37,16 +37,16 @@ corresponding functions, and initialize module private variables.
 @param [in]   DemodAppMode                 RTL2832 application mode for setting
 @param [in]   DemodUpdateFuncRefPeriodMs   RTL2832 update function reference period in millisecond for setting
 @param [in]   DemodIsFunc1Enabled          RTL2832 Function 1 enabling status for setting
-@param [in]   TunerDeviceAddr              FC0012 I2C device address
-@param [in]   TunerCrystalFreqHz           FC0012 crystal frequency in Hz
+@param [in]   TunerDeviceAddr              FC0013 I2C device address
+@param [in]   TunerCrystalFreqHz           FC0013 crystal frequency in Hz
 
 
 @note
-	-# One should call BuildRtl2832Fc0012Module() to build RTL2832 FC0012 NIM module before using it.
+	-# One should call BuildRtl2832Fc0013Module() to build RTL2832 FC0013 NIM module before using it.
 
 */
 void
-BuildRtl2832Fc0012Module(
+BuildRtl2832Fc0013Module(
 	DVBT_NIM_MODULE **ppNim,							// DVB-T NIM dependence
 	DVBT_NIM_MODULE *pDvbtNimModuleMemory,
 
@@ -68,7 +68,7 @@ BuildRtl2832Fc0012Module(
 	)
 {
 	DVBT_NIM_MODULE *pNim;
-	RTL2832_FC0012_EXTRA_MODULE *pNimExtra;
+	RTL2832_FC0013_EXTRA_MODULE *pNimExtra;
 
 
 
@@ -82,11 +82,11 @@ BuildRtl2832Fc0012Module(
 	pNim->pI2cBridge = &pNim->I2cBridgeModuleMemory;
 
 	// Get NIM extra module.
-	pNimExtra = &(pNim->Extra.Rtl2832Fc0012);
+	pNimExtra = &(pNim->Extra.Rtl2832Fc0013);
 
 
 	// Set NIM type.
-	pNim->NimType = DVBT_NIM_RTL2832_FC0012;
+	pNim->NimType = DVBT_NIM_RTL2832_FC0013;
 
 
 	// Build base interface module.
@@ -114,8 +114,8 @@ BuildRtl2832Fc0012Module(
 		DemodIsFunc1Enabled
 		);
 
-	// Build FC0012 tuner module.
-	BuildFc0012Module(
+	// Build FC0013 tuner module.
+	BuildFc0013Module(
 		&pNim->pTuner,
 		&pNim->TunerModuleMemory,
 		&pNim->BaseInterfaceModuleMemory,
@@ -139,13 +139,13 @@ BuildRtl2832Fc0012Module(
 	pNim->GetTpsInfo        = dvbt_nim_default_GetTpsInfo;
 
 	// Set NIM module function pointers with particular functions.
-	pNim->Initialize     = rtl2832_fc0012_Initialize;
-	pNim->SetParameters  = rtl2832_fc0012_SetParameters;
-	pNim->UpdateFunction = rtl2832_fc0012_UpdateFunction;
+	pNim->Initialize     = rtl2832_fc0013_Initialize;
+	pNim->SetParameters  = rtl2832_fc0013_SetParameters;
+	pNim->UpdateFunction = rtl2832_fc0013_UpdateFunction;
 
 
 	// Initialize NIM extra module variables.
-	pNimExtra->LnaUpdateWaitTimeMax = DivideWithCeiling(RTL2832_FC0012_LNA_UPDATE_WAIT_TIME_MS, DemodUpdateFuncRefPeriodMs);
+	pNimExtra->LnaUpdateWaitTimeMax = DivideWithCeiling(RTL2832_FC0013_LNA_UPDATE_WAIT_TIME_MS, DemodUpdateFuncRefPeriodMs);
 	pNimExtra->LnaUpdateWaitTime    = 0;
 
 
@@ -162,7 +162,7 @@ BuildRtl2832Fc0012Module(
 
 */
 int
-rtl2832_fc0012_Initialize(
+rtl2832_fc0013_Initialize(
 	DVBT_NIM_MODULE *pNim
 	)
 {
@@ -174,7 +174,7 @@ rtl2832_fc0012_Initialize(
 	REG_VALUE_ENTRY;
 
 
-	static const REG_VALUE_ENTRY AdditionalInitRegValueTable[RTL2832_FC0012_ADDITIONAL_INIT_REG_TABLE_LEN] =
+	static const REG_VALUE_ENTRY AdditionalInitRegValueTable[RTL2832_FC0013_ADDITIONAL_INIT_REG_TABLE_LEN] =
 	{
 		// RegBitName,				Value
 		{DVBT_DAGC_TRG_VAL,			0x5a	},
@@ -237,17 +237,11 @@ rtl2832_fc0012_Initialize(
 	if(pTuner->Initialize(pTuner) != FUNCTION_SUCCESS)
 		goto error_status_execute_function;
 
-	// Set tuner registers.
-	if(fc0012_SetRegMaskBits(pTuner, 0xd, 7, 0, 0x2) != FC0012_I2C_SUCCESS)
-		goto error_status_set_registers;
-
-	// Set tuner registers.
-	if(fc0012_SetRegMaskBits(pTuner, 0x11, 7, 0, 0x0) != FC0012_I2C_SUCCESS)
-		goto error_status_set_registers;
-
-	// Set tuner registers.
-	if(fc0012_SetRegMaskBits(pTuner, 0x15, 7, 0, 0x4) != FC0012_I2C_SUCCESS)
-		goto error_status_set_registers;
+	// Set FC0013 up-dowm AGC.
+	//(0xFE for master of dual).
+	//(0xFC for slave of dual, and for 2832 mini dongle).
+	if(fc0013_SetRegMaskBits(pTuner, 0x0c, 7, 0, 0xFC) != FC0013_I2C_SUCCESS)
+		goto error_status_set_tuner_registers;
 
 	// Disable demod DVBT_IIC_REPEAT.
 	if(pDemod->SetRegBitsWithPage(pDemod, DVBT_IIC_REPEAT, 0x0) != FUNCTION_SUCCESS)
@@ -268,7 +262,7 @@ rtl2832_fc0012_Initialize(
 
 
 	// Set demod registers.
-	for(i = 0; i < RTL2832_FC0012_ADDITIONAL_INIT_REG_TABLE_LEN; i++)
+	for(i = 0; i < RTL2832_FC0013_ADDITIONAL_INIT_REG_TABLE_LEN; i++)
 	{
 		// Get register bit name and its value.
 		RegBitName = AdditionalInitRegValueTable[i].RegBitName;
@@ -279,14 +273,18 @@ rtl2832_fc0012_Initialize(
 			goto error_status_set_registers;
 	}
 
+	// Reset demod by software reset.
+	if(pDemod->SoftwareReset(pDemod) != FUNCTION_SUCCESS)
+		goto error_status_execute_function;
+
 
 	// Enable demod DVBT_IIC_REPEAT.
 	if(pDemod->SetRegBitsWithPage(pDemod, DVBT_IIC_REPEAT, 0x1) != FUNCTION_SUCCESS)
 		goto error_status_set_registers;
 
 	// Get tuner RSSI value when calibration is on.
-	// Note: Need to execute rtl2832_fc0012_GetTunerRssiCalOn() after demod AD7 is on.
-	if(rtl2832_fc0012_GetTunerRssiCalOn(pNim) != FUNCTION_SUCCESS)
+	// Note: Need to execute rtl2832_fc0013_GetTunerRssiCalOn() after demod AD7 is on.
+	if(rtl2832_fc0013_GetTunerRssiCalOn(pNim) != FUNCTION_SUCCESS)
 		goto error_status_execute_function;
 
 	// Disable demod DVBT_IIC_REPEAT.
@@ -299,6 +297,7 @@ rtl2832_fc0012_Initialize(
 
 error_status_execute_function:
 error_status_set_registers:
+error_status_set_tuner_registers:
 	return FUNCTION_ERROR;
 }
 
@@ -312,7 +311,7 @@ error_status_set_registers:
 
 */
 int
-rtl2832_fc0012_SetParameters(
+rtl2832_fc0013_SetParameters(
 	DVBT_NIM_MODULE *pNim,
 	unsigned long RfFreqHz,
 	int BandwidthMode
@@ -321,7 +320,7 @@ rtl2832_fc0012_SetParameters(
 	TUNER_MODULE *pTuner;
 	DVBT_DEMOD_MODULE *pDemod;
 
-	FC0012_EXTRA_MODULE *pTunerExtra;
+	FC0013_EXTRA_MODULE *pTunerExtra;
 	int TunerBandwidthMode;
 
 
@@ -331,7 +330,7 @@ rtl2832_fc0012_SetParameters(
 	pDemod = pNim->pDemod;
 
 	// Get tuner extra module.
-	pTunerExtra = &(pTuner->Extra.Fc0012);
+	pTunerExtra = &(pTuner->Extra.Fc0013);
 
 
 	// Enable demod DVBT_IIC_REPEAT.
@@ -346,14 +345,23 @@ rtl2832_fc0012_SetParameters(
 	switch(BandwidthMode)
 	{
 		default:
-		case DVBT_BANDWIDTH_6MHZ:		TunerBandwidthMode = FC0012_BANDWIDTH_6000000HZ;		break;
-		case DVBT_BANDWIDTH_7MHZ:		TunerBandwidthMode = FC0012_BANDWIDTH_7000000HZ;		break;
-		case DVBT_BANDWIDTH_8MHZ:		TunerBandwidthMode = FC0012_BANDWIDTH_8000000HZ;		break;
+		case DVBT_BANDWIDTH_6MHZ:		TunerBandwidthMode = FC0013_BANDWIDTH_6000000HZ;		break;
+		case DVBT_BANDWIDTH_7MHZ:		TunerBandwidthMode = FC0013_BANDWIDTH_7000000HZ;		break;
+		case DVBT_BANDWIDTH_8MHZ:		TunerBandwidthMode = FC0013_BANDWIDTH_8000000HZ;		break;
 	}
 
 	// Set tuner bandwidth mode with TunerBandwidthMode.
 	if(pTunerExtra->SetBandwidthMode(pTuner, TunerBandwidthMode) != FUNCTION_SUCCESS)
 		goto error_status_execute_function;
+
+	// Reset tuner IQ LPF BW.
+	if(pTunerExtra->RcCalReset(pTuner) != FUNCTION_SUCCESS)
+		goto error_status_execute_function;
+
+	// Set tuner IQ LPF BW, val=-2 for D-book ACI test.
+	if(pTunerExtra->RcCalAdd(pTuner, -2) != FUNCTION_SUCCESS)
+		goto error_status_execute_function;
+
 
 	// Disable demod DVBT_IIC_REPEAT.
 	if(pDemod->SetRegBitsWithPage(pDemod, DVBT_IIC_REPEAT, 0x0) != FUNCTION_SUCCESS)
@@ -392,19 +400,19 @@ error_status_set_registers:
 
 */
 int
-rtl2832_fc0012_UpdateFunction(
+rtl2832_fc0013_UpdateFunction(
 	DVBT_NIM_MODULE *pNim
 	)
 {
 	DVBT_DEMOD_MODULE *pDemod;
-	RTL2832_FC0012_EXTRA_MODULE *pNimExtra;
+	RTL2832_FC0013_EXTRA_MODULE *pNimExtra;
 
 
 	// Get demod module.
 	pDemod = pNim->pDemod;
 
 	// Get NIM extra module.
-	pNimExtra = &(pNim->Extra.Rtl2832Fc0012);
+	pNimExtra = &(pNim->Extra.Rtl2832Fc0013);
 
 
 	// Update demod particular registers.
@@ -427,7 +435,7 @@ rtl2832_fc0012_UpdateFunction(
 			goto error_status_set_registers;
 
 		// Update tuner LNA gain with RSSI.
-		if(rtl2832_fc0012_UpdateTunerLnaGainWithRssi(pNim) != FUNCTION_SUCCESS)
+		if(rtl2832_fc0013_UpdateTunerLnaGainWithRssi(pNim) != FUNCTION_SUCCESS)
 			goto error_status_execute_function;
 
 		// Disable demod DVBT_IIC_REPEAT.
@@ -452,7 +460,7 @@ error_status_execute_function:
 
 @brief   Get tuner RSSI value when calibration is on.
 
-One can use rtl2832_fc0012_GetTunerRssiCalOn() to get tuner calibration-on RSSI value.
+One can use rtl2832_fc0013_GetTunerRssiCalOn() to get tuner calibration-on RSSI value.
 
 
 @param [in]   pNim   The NIM module pointer
@@ -463,14 +471,15 @@ One can use rtl2832_fc0012_GetTunerRssiCalOn() to get tuner calibration-on RSSI 
 
 */
 int
-rtl2832_fc0012_GetTunerRssiCalOn(
+rtl2832_fc0013_GetTunerRssiCalOn(
 	DVBT_NIM_MODULE *pNim
 	)
 {
 	TUNER_MODULE *pTuner;
 	DVBT_DEMOD_MODULE *pDemod;
-	FC0012_EXTRA_MODULE *pTunerExtra;
-	RTL2832_FC0012_EXTRA_MODULE *pNimExtra;
+	FC0013_EXTRA_MODULE *pTunerExtra;
+	RTL2832_FC0013_EXTRA_MODULE *pNimExtra;
+	BASE_INTERFACE_MODULE *pBaseInterface;
 
 
 
@@ -479,20 +488,25 @@ rtl2832_fc0012_GetTunerRssiCalOn(
 	pDemod = pNim->pDemod;
 
 	// Get tuner extra module.
-	pTunerExtra = &(pTuner->Extra.Fc0012);
+	pTunerExtra = &(pTuner->Extra.Fc0013);
 
 	// Get NIM extra module.
-	pNimExtra = &(pNim->Extra.Rtl2832Fc0012);
+	pNimExtra = &(pNim->Extra.Rtl2832Fc0013);
+
+	// Get NIM base interface.
+	pBaseInterface = pNim->pBaseInterface;
 
 
 	// Set tuner EN_CAL_RSSI to 0x1.
-	if(fc0012_SetRegMaskBits(pTuner, 0x9, 4, 4, 0x1) != FC0012_I2C_SUCCESS)
+	if(fc0013_SetRegMaskBits(pTuner, 0x9, 4, 4, 0x1) != FC0013_I2C_SUCCESS)
 		goto error_status_set_registers;
 
 	// Set tuner LNA_POWER_DOWN to 0x1.
-	if(fc0012_SetRegMaskBits(pTuner, 0x6, 0, 0, 0x1) != FC0012_I2C_SUCCESS)
+	if(fc0013_SetRegMaskBits(pTuner, 0x6, 0, 0, 0x1) != FC0013_I2C_SUCCESS)
 		goto error_status_set_registers;
 
+	// Wait 100 ms.
+	pBaseInterface->WaitMs(pBaseInterface, 100);
 
 	// Get demod RSSI_R when tuner RSSI calibration is on.
 	if(pDemod->GetRegBitsWithPage(pDemod, DVBT_RSSI_R, &(pNimExtra->RssiRCalOn)) != FUNCTION_SUCCESS)
@@ -500,11 +514,11 @@ rtl2832_fc0012_GetTunerRssiCalOn(
 
 
 	// Set tuner EN_CAL_RSSI to 0x0.
-	if(fc0012_SetRegMaskBits(pTuner, 0x9, 4, 4, 0x0) != FC0012_I2C_SUCCESS)
+	if(fc0013_SetRegMaskBits(pTuner, 0x9, 4, 4, 0x0) != FC0013_I2C_SUCCESS)
 		goto error_status_set_registers;
 
 	// Set tuner LNA_POWER_DOWN to 0x0.
-	if(fc0012_SetRegMaskBits(pTuner, 0x6, 0, 0, 0x0) != FC0012_I2C_SUCCESS)
+	if(fc0013_SetRegMaskBits(pTuner, 0x6, 0, 0, 0x0) != FC0013_I2C_SUCCESS)
 		goto error_status_set_registers;
 
 
@@ -524,7 +538,7 @@ error_status_set_registers:
 
 @brief   Update tuner LNA_GAIN with RSSI.
 
-One can use rtl2832_fc0012_UpdateTunerLnaGainWithRssi() to update tuner LNA_GAIN with RSSI.
+One can use rtl2832_fc0013_UpdateTunerLnaGainWithRssi() to update tuner LNA_GAIN with RSSI.
 
 
 @param [in]   pNim   The NIM module pointer
@@ -535,18 +549,24 @@ One can use rtl2832_fc0012_UpdateTunerLnaGainWithRssi() to update tuner LNA_GAIN
 
 */
 int
-rtl2832_fc0012_UpdateTunerLnaGainWithRssi(
+rtl2832_fc0013_UpdateTunerLnaGainWithRssi(
 	DVBT_NIM_MODULE *pNim
 	)
 {
 	TUNER_MODULE *pTuner;
 	DVBT_DEMOD_MODULE *pDemod;
-	FC0012_EXTRA_MODULE *pTunerExtra;
-	RTL2832_FC0012_EXTRA_MODULE *pNimExtra;
+	FC0013_EXTRA_MODULE *pTunerExtra;
+	RTL2832_FC0013_EXTRA_MODULE *pNimExtra;
 
 	unsigned long RssiRCalOff;
 	long RssiRDiff;
 	unsigned char LnaGain;
+	unsigned char ReadValue;
+
+	// added from Fitipower, 2011-2-23, v0.8
+	int boolVhfFlag;      // 0:false,  1:true
+	int boolEnInChgFlag;  // 0:false,  1:true
+	int intGainShift;
 
 
 
@@ -555,23 +575,27 @@ rtl2832_fc0012_UpdateTunerLnaGainWithRssi(
 	pDemod = pNim->pDemod;
 
 	// Get tuner extra module.
-	pTunerExtra = &(pTuner->Extra.Fc0012);
+	pTunerExtra = &(pTuner->Extra.Fc0013);
 
 	// Get NIM extra module.
-	pNimExtra = &(pNim->Extra.Rtl2832Fc0012);
+	pNimExtra = &(pNim->Extra.Rtl2832Fc0013);
 
 
 	// Get demod RSSI_R when tuner RSSI calibration in off.
-	// Note: Tuner EN_CAL_RSSI and LNA_POWER_DOWN are set to 0x0 after rtl2832_fc0012_GetTunerRssiCalOn() executing.
+	// Note: Tuner EN_CAL_RSSI and LNA_POWER_DOWN are set to 0x0 after rtl2832_fc0013_GetTunerRssiCalOn() executing.
 	if(pDemod->GetRegBitsWithPage(pDemod, DVBT_RSSI_R, &RssiRCalOff) != FUNCTION_SUCCESS)
 		goto error_status_get_registers;
+
+	// To avoid the wrong rssi calibration value in the environment with strong RF pulse signal.
+	if(RssiRCalOff < pNimExtra->RssiRCalOn)
+		pNimExtra->RssiRCalOn = RssiRCalOff;
 
 
 	// Calculate RSSI_R difference.
 	RssiRDiff = RssiRCalOff - pNimExtra->RssiRCalOn;
 
 	// Get tuner LNA_GAIN.
-	if(fc0012_GetRegMaskBits(pTuner, 0x13, 4, 3, &LnaGain) != FC0012_I2C_SUCCESS)
+	if(fc0013_GetRegMaskBits(pTuner, 0x14, 4, 0, &LnaGain) != FC0013_I2C_SUCCESS)
 		goto error_status_get_registers;
 
 
@@ -579,39 +603,205 @@ rtl2832_fc0012_UpdateTunerLnaGainWithRssi(
 	switch(LnaGain)
 	{
 		default:
-		case FC0012_LNA_GAIN_LOW:
 
-			if(RssiRDiff <= 0)
-				LnaGain = FC0012_LNA_GAIN_MIDDLE;
+			boolVhfFlag = 0;		
+			boolEnInChgFlag = 1;
+			intGainShift = 10;
+			LnaGain = FC0013_LNA_GAIN_HIGH_19;
 
-			break;
-
-
-		case FC0012_LNA_GAIN_MIDDLE:
-
-			if(RssiRDiff >= 34)
-				LnaGain = FC0012_LNA_GAIN_LOW;
-
-			if(RssiRDiff <= 0)
-				LnaGain = FC0012_LNA_GAIN_HIGH;
+			// Set tuner LNA_GAIN.
+			if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+				goto error_status_set_registers;
 
 			break;
 
 
-		case FC0012_LNA_GAIN_HIGH:
+		case FC0013_LNA_GAIN_HIGH_19:
 
-			if(RssiRDiff >= 8)
-				LnaGain = FC0012_LNA_GAIN_MIDDLE;
+			if(RssiRDiff >= 10)
+			{
+				boolVhfFlag = 1;		
+				boolEnInChgFlag = 0;
+				intGainShift = 10;
+				LnaGain = FC0013_LNA_GAIN_HIGH_17;
 
-			break;
+				// Set tuner LNA_GAIN.
+				if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+					goto error_status_set_registers;
+
+				break;
+			}
+			else
+			{
+				goto success_status_Lna_Gain_No_Change;
+			}
+
+
+		case FC0013_LNA_GAIN_HIGH_17:
+			
+			if(RssiRDiff <= 2)
+			{
+				boolVhfFlag = 0;	
+				boolEnInChgFlag = 1;
+				intGainShift = 10;
+				LnaGain = FC0013_LNA_GAIN_HIGH_19;
+
+				// Set tuner LNA_GAIN.
+				if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+					goto error_status_set_registers;
+
+				break;
+			}
+
+			else if(RssiRDiff >= 24)
+			{
+				boolVhfFlag = 0;	
+				boolEnInChgFlag = 0;
+				intGainShift = 7;
+				LnaGain = FC0013_LNA_GAIN_MIDDLE;
+
+				// Set tuner LNA_GAIN.
+				if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+					goto error_status_set_registers;
+
+				break;
+			}
+
+			else
+			{
+				goto success_status_Lna_Gain_No_Change;
+			}
+
+
+		case FC0013_LNA_GAIN_MIDDLE:
+
+			if(RssiRDiff >= 38)
+			{
+				boolVhfFlag = 0;	
+				boolEnInChgFlag = 0;
+				intGainShift = 7;
+				LnaGain = FC0013_LNA_GAIN_LOW;
+
+				// Set tuner LNA_GAIN.
+				if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+					goto error_status_set_registers;
+
+				break;
+			}
+
+			else if(RssiRDiff <= 5)
+			{
+				boolVhfFlag = 1;
+				boolEnInChgFlag = 0;
+				intGainShift = 10;
+				LnaGain = FC0013_LNA_GAIN_HIGH_17;
+
+				// Set tuner LNA_GAIN.
+				if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+					goto error_status_set_registers;
+
+				break;
+			}
+
+			else
+			{
+				goto success_status_Lna_Gain_No_Change;
+			}
+
+		
+		case FC0013_LNA_GAIN_LOW:
+
+			if(RssiRDiff <= 2)
+			{
+				boolVhfFlag = 0;
+				boolEnInChgFlag = 0;
+				intGainShift = 7;
+				LnaGain = FC0013_LNA_GAIN_MIDDLE;
+
+				// Set tuner LNA_GAIN.
+				if(fc0013_SetRegMaskBits(pTuner, 0x14, 4, 0, LnaGain) != FC0013_I2C_SUCCESS)
+					goto error_status_set_registers;
+
+				break;
+			}
+
+			else
+			{
+				goto success_status_Lna_Gain_No_Change;
+			}
 	}
 
 
-	// Set tuner LNA_GAIN.
-	if(fc0012_SetRegMaskBits(pTuner, 0x13, 4, 3, LnaGain) != FC0012_I2C_SUCCESS)
-		goto error_status_set_registers;
+	if(fc0013_GetRegMaskBits(pTuner, 0x14, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+		goto error_status_get_registers;
+
+	if( (ReadValue & 0x60) == 0 )   // disable UHF & GPS ==> lock VHF frequency
+	{
+		boolVhfFlag = 1;
+	}
 
 
+	if( boolVhfFlag == 1 )
+	{
+		//FC0013_Write(0x07, (FC0013_Read(0x07) | 0x10));				// VHF = 1
+		if(fc0013_GetRegMaskBits(pTuner, 0x07, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+			goto error_status_get_registers;
+
+		if(fc0013_SetRegMaskBits(pTuner, 0x07, 7, 0, ReadValue | 0x10) != FC0013_I2C_SUCCESS)
+			goto error_status_set_registers;
+	}
+	else
+	{
+		//FC0013_Write(0x07, (FC0013_Read(0x07) & 0xEF));				// VHF = 0
+		if(fc0013_GetRegMaskBits(pTuner, 0x07, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+			goto error_status_get_registers;
+
+		if(fc0013_SetRegMaskBits(pTuner, 0x07, 7, 0, ReadValue & 0xEF) != FC0013_I2C_SUCCESS)
+			goto error_status_set_registers;
+	}
+		
+
+	if( boolEnInChgFlag == 1 )
+	{
+		//FC0013_Write(0x0A, (FC0013_Read(0x0A) | 0x20));				// EN_IN_CHG = 1
+		if(fc0013_GetRegMaskBits(pTuner, 0x0A, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+			goto error_status_get_registers;
+
+		if(fc0013_SetRegMaskBits(pTuner, 0x0A, 7, 0, ReadValue | 0x20) != FC0013_I2C_SUCCESS)
+			goto error_status_set_registers;
+	}
+	else
+	{
+		//FC0013_Write(0x0A, (FC0013_Read(0x0A) & 0xDF));				// EN_IN_CHG = 0
+		if(fc0013_GetRegMaskBits(pTuner, 0x0A, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+			goto error_status_get_registers;
+
+		if(fc0013_SetRegMaskBits(pTuner, 0x0A, 7, 0, ReadValue & 0xDF) != FC0013_I2C_SUCCESS)
+			goto error_status_set_registers;
+	}
+
+
+	if( intGainShift == 10 )
+	{
+		//FC0013_Write(0x07, (FC0013_Read(0x07) & 0xF0) | 0x0A);		// GS = 10
+		if(fc0013_GetRegMaskBits(pTuner, 0x07, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+			goto error_status_get_registers;
+
+		if(fc0013_SetRegMaskBits(pTuner, 0x07, 7, 0, (ReadValue & 0xF0) | 0x0A) != FC0013_I2C_SUCCESS)
+			goto error_status_set_registers;
+	}
+	else
+	{
+		//FC0013_Write(0x07, (FC0013_Read(0x07) & 0xF0) | 0x07);		// GS = 7
+		if(fc0013_GetRegMaskBits(pTuner, 0x07, 7, 0, &ReadValue) != FC0013_I2C_SUCCESS)
+			goto error_status_get_registers;
+
+		if(fc0013_SetRegMaskBits(pTuner, 0x07, 7, 0, (ReadValue & 0xF0) | 0x07) != FC0013_I2C_SUCCESS)
+			goto error_status_set_registers;
+	}
+
+
+success_status_Lna_Gain_No_Change:
 	return FUNCTION_SUCCESS;
 
 

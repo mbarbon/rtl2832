@@ -697,7 +697,6 @@ typedef struct QAM_DEMOD_MODULE_TAG QAM_DEMOD_MODULE;
 
 /**
 
-
 @brief   QAM demod register page setting function pointer
 
 Demod upper level functions will use QAM_DEMOD_FP_SET_REG_PAGE() to set demod register page.
@@ -2519,7 +2518,6 @@ struct RTD2932_QAM_EXTRA_MODULE_TAG
 	// Functions
 	RTD2932_QAM_FP_GET_CONFIG_MODE   GetConfigMode;
 };
-
 
 
 

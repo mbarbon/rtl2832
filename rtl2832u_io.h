@@ -49,26 +49,83 @@ enum {
 	PAGE_9 = 9,	
 };
 
-int read_rc_register(struct dvb_usb_device* dib, RegType type, u16 byte_addr,
-	u8* buf, u16 len);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//		remote control 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+read_rc_char_bytes(
+	struct dvb_usb_device*	dib,
+	RegType	type,
+	unsigned short	byte_addr,
+	unsigned char*	buf,
+	unsigned short	byte_num);
 
-int write_rc_register(struct dvb_usb_device* dib, RegType type,
-	u16 byte_addr, u8* buf, u16 len);
+int
+write_rc_char_bytes(
+	struct dvb_usb_device*	dib,
+	RegType	type,
+	unsigned short	byte_addr,
+	unsigned char*	buf,
+	unsigned short	byte_num);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int read_usb_sys_char_bytes(struct dvb_usb_device* dib,RegType type,
-	u16 byte_addr, u8* buf, u16 len);
+//3////////////////////////
+//3for return PUCHAR value
+//3///////////////////////
 
-int write_usb_sys_char_bytes(struct dvb_usb_device* dib,
-	RegType	type, u16 byte_addr, u8* buf, u16 len);
+int
+read_usb_sys_char_bytes(
+	struct dvb_usb_device*	dib,
+	RegType	type,
+	unsigned short	byte_addr,
+	unsigned char*	buf,
+	unsigned short	byte_num);
 
-int read_usb_sys_int_bytes(struct dvb_usb_device* dib, RegType	type,
-	u16 byte_addr,u16 n_bytes, int* p_val);
-
-int write_usb_sys_int_bytes(struct dvb_usb_device* dib, RegType	type,
-	u16 byte_addr, u16 n_bytes, int val);
 
 
-void platform_wait(unsigned long nMinDelayTime);
+int
+write_usb_sys_char_bytes(
+	struct dvb_usb_device*	dib,
+	RegType	type,
+	unsigned short	byte_addr,
+	unsigned char*	buf,
+	unsigned short	byte_num);
+
+
+
+//3//////////////////
+//3for return INT value
+//3//////////////////
+
+int
+read_usb_sys_int_bytes(
+	struct dvb_usb_device*	dib,
+	RegType	type,
+	unsigned short	byte_addr,
+	unsigned short	n_bytes,
+	int*	p_val);
+
+
+int
+write_usb_sys_int_bytes(
+	struct dvb_usb_device*	dib,
+	RegType	type,
+	unsigned short	byte_addr,
+	unsigned short	n_bytes,
+	int	val);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//	Remote Control
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////
+
+void
+platform_wait(
+	unsigned long nMinDelayTime);
+
 
 
 #if 0
@@ -79,16 +136,16 @@ void platform_wait(unsigned long nMinDelayTime);
 int
 read_rtl2832_stdi2c(
 	struct dvb_usb_device*	dib,
-	u16			dev_i2c_addr,
-	u8*			data,
-	u16			bytelength);
+	unsigned short			dev_i2c_addr,
+	unsigned char*			data,
+	unsigned short			bytelength);
 
 int 
 write_rtl2832_stdi2c(
 	struct dvb_usb_device*	dib,
-	u16			dev_i2c_addr,
-	u8*			data,
-	u16			bytelength);
+	unsigned short			dev_i2c_addr,
+	unsigned char*			data,
+	unsigned short			bytelength);
 
 #endif
 
@@ -97,11 +154,11 @@ write_rtl2832_stdi2c(
 int 
 read_demod_register(
 	struct dvb_usb_device*dib,
-	u8			demod_device_addr,
-	u8 		page,
-	u8 		offset,
-	u8*		data,
-	u16		bytelength);
+	unsigned char			demod_device_addr,	
+	unsigned char 		page,
+	unsigned char 		offset,
+	unsigned char*		data,
+	unsigned short		bytelength);
 
 
 
@@ -109,31 +166,31 @@ read_demod_register(
 int
 write_demod_register(
 	struct dvb_usb_device*dib,
-	u8			demod_device_addr,
-	u8			page,
-	u8			offset,
-	u8			*data,
-	u16		bytelength);
+	unsigned char			demod_device_addr,		
+	unsigned char			page,
+	unsigned char			offset,
+	unsigned char			*data,
+	unsigned short		bytelength);
 
 
 
 int 
 read_rtl2832_tuner_register(
 	struct dvb_usb_device	*dib,
-	u8			device_address,
-	u8			offset,
-	u8			*data,
-	u16		bytelength);
+	unsigned char			device_address,
+	unsigned char			offset,
+	unsigned char			*data,
+	unsigned short		bytelength);
 
 
 
 
 int write_rtl2832_tuner_register(
 	struct dvb_usb_device *dib,
-	u8			device_address,
-	u8			offset,
-	u8			*data,
-	u16		bytelength);
+	unsigned char			device_address,
+	unsigned char			offset,
+	unsigned char			*data,
+	unsigned short		bytelength);
 
 
 
@@ -142,38 +199,39 @@ int write_rtl2832_tuner_register(
 int 
 	write_rtl2832_stdi2c(
 	struct dvb_usb_device*	dib,
-	u16			dev_i2c_addr,
-	u8*			data,
-	u16			bytelength);
+	unsigned short			dev_i2c_addr,
+	unsigned char*			data,
+	unsigned short			bytelength);
 
 
 
 int
 	read_rtl2832_stdi2c(
 	struct dvb_usb_device*	dib,
-	u16			dev_i2c_addr,
-	u8*			data,
-	u16			bytelength);
+	unsigned short			dev_i2c_addr,
+	unsigned char*			data,
+	unsigned short			bytelength);
 
 
 int
 write_rtl2836_demod_register(
 	struct dvb_usb_device*dib,
-	u8			demod_device_addr,
-	u8			page,
-	u8			offset,
-	u8			*data,
-	u16		bytelength);
+	unsigned char			demod_device_addr,		
+	unsigned char			page,
+	unsigned char			offset,
+	unsigned char			*data,
+	unsigned short		bytelength);
 
 
 int 
 read_rtl2836_demod_register(
 	struct dvb_usb_device*dib,
-	u8			demod_device_addr,
-	u8 		page,
-	u8 		offset,
-	u8*		data,
-	u16		bytelength);
+	unsigned char			demod_device_addr,	
+	unsigned char 		page,
+	unsigned char 		offset,
+	unsigned char*		data,
+	unsigned short		bytelength);
+
 
 
 ////////////////////////////////////

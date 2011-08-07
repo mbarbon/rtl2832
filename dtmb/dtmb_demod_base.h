@@ -135,7 +135,7 @@ int main(void)
 		0x3e,							// Demod I2C device address is 0x3e in 8-bit format.
 		CRYSTAL_FREQ_27000000HZ,		// Demod crystal frequency is 27.0 MHz.
 		TS_INTERFACE_SERIAL,			// Demod TS interface mode is serial.
-		DIVERSITY_OFF					// Demod diversity is disabled.
+		DIVERSITY_PIP_OFF				// Demod diversity and PIP both are disabled.
 		...								// Other arguments by each demod module
 		);
 
@@ -449,7 +449,10 @@ enum DTMB_REG_BIT_NAME
 	DTMB_SERIAL,
 	DTMB_CDIV_PH0,
 	DTMB_CDIV_PH1,
-
+	DTMB_SER_LSB,
+	DTMB_SYNC_DUR,
+	DTMB_ERR_DUR,
+	DTMB_FIX_TEI,
 
 	// Signal lock status
 	DTMB_TPS_LOCK,
@@ -499,6 +502,8 @@ enum DTMB_REG_BIT_NAME
 	DTMB_DIV_EN,				// For RTL2836B DTMB only
 	DTMB_DIV_MODE,				// For RTL2836B DTMB only
 	DTMB_DIV_RX_CLK_XOR,		// For RTL2836B DTMB only
+	DTMB_DIV_THD_ERR_CMP0,		// For RTL2836B DTMB only
+	DTMB_FSM_10L_MSB_3Byte,		// For RTL2836B DTMB only
 
 	// Item terminator
 	DTMB_REG_BIT_NAME_ITEM_TERMINATOR,
@@ -2234,13 +2239,12 @@ struct RTL2836_EXTRA_MODULE_TAG
 /// DTMB demod module structure
 struct DTMB_DEMOD_MODULE_TAG
 {
-
 	// Private variables
 	int           DemodType;
 	unsigned char DeviceAddr;
 	unsigned long CrystalFreqHz;
 	int           TsInterfaceMode;
-	int           DiversityMode;
+	int           DiversityPipMode;
 
 	unsigned long IfFreqHz;
 	int           SpectrumMode;

@@ -415,10 +415,10 @@ typedef double          FData_t;        /*  floating point data type        */
 //
 typedef enum
 {
-    MT_NO_DECT_AVOIDANCE = 0x00000000,     // Do not create DECT exclusion zones.     
-    MT_AVOID_US_DECT     = 0x00000001,     // Avoid US DECT frequencies.              
-    MT_AVOID_EURO_DECT   = 0x00000002,     // Avoid European DECT frequencies.        
-    MT_AVOID_BOTH                          // Avoid both regions. Not typically used. 
+    MT_NO_DECT_AVOIDANCE = 0,              /* Do not create DECT exclusion zones.     */
+    MT_AVOID_US_DECT     = 0x00000001,     /* Avoid US DECT frequencies.              */
+    MT_AVOID_EURO_DECT   = 0x00000002,     /* Avoid European DECT frequencies.        */
+    MT_AVOID_BOTH                          /* Avoid both regions. Not typically used. */
 } MT_DECT_Avoid_Type;
 #endif
 /*

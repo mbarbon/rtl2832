@@ -50,7 +50,7 @@ int main(void)
 		CRYSTAL_FREQ_28800000HZ,		// The RTL2832 crystal frequency is 28.8 MHz.
 		TS_INTERFACE_SERIAL,			// The RTL2832 TS interface mode is serial.
 		RTL2832_APPLICATION_STB,		// The RTL2832 application mode is STB mode.
-		50,								// The RTL2832 update function reference period is 50 millisecond
+		200,							// The RTL2832 update function reference period is 200 millisecond
 		YES,							// The RTL2832 Function 1 enabling status is YES.
 
 		0xc0							// The TUA9001 I2C device address is 0xc0 in 8-bit format.

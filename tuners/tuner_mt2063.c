@@ -1523,7 +1523,7 @@ UData_t MT2063_Close(Handle_t hMT2063)
 
     /* Now remove the tuner from our own list of tuners */
     pInfo->handle    = MT_NULL;
-    pInfo->address   = (UData_t)(MAX_UDATA);//4294967295
+    pInfo->address   = (UData_t)MAX_UDATA;
     pInfo->hUserData = MT_NULL;
     nOpenTuners--;
     Avail[nOpenTuners] = pInfo; /* Return control block to available list */
@@ -4303,7 +4303,7 @@ static UData_t              TunerCount = 0;
 UData_t MT2063_RegisterTuner(MT2063_AvoidSpursData_t* pAS_Info)
 {
 #if MT_TUNER_CNT == 1
-   // pAS_Info->nAS_Algorithm = 1;
+    pAS_Info->nAS_Algorithm = 1;
     return MT_OK;
 #else
     UData_t index;

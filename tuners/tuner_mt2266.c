@@ -695,7 +695,7 @@ UData_t MT2266_ReadSub(Handle_t hUserData,
                    U8Data *pData, 
                    UData_t cnt)
 {
-    UData_t status = MT_OK;                        /* Status to be returned        */
+  //  UData_t status = MT_OK;                        /* Status to be returned        */
 
     /*
     **  ToDo:  Add code here to implement a serial-bus read
@@ -1004,7 +1004,7 @@ UData_t MT_TunerGain(Handle_t hUserData,
 **  Two-wire serial bus subaddresses of the tuner registers.
 **  Also known as the tuner's register addresses.
 */
-static enum MT2266_Register_Offsets
+enum MT2266_Register_Offsets
 {
     MT2266_PART_REV = 0,   /*  0x00 */
     MT2266_LO_CTRL_1,      /*  0x01 */
@@ -1364,6 +1364,7 @@ UData_t MT2266_Open(UData_t MT2266_Addr,
     UData_t status = MT_OK;             /*  Status to be returned.  */
     SData_t i, j;
     MT2266_Info_t* pInfo = MT_NULL;
+ 
 
     /*  Check the argument before using  */
     if (hMT2266 == MT_NULL)
@@ -1379,7 +1380,7 @@ UData_t MT2266_Open(UData_t MT2266_Addr,
         for (i=MT2266_CNT-1; i>=0; i--)
         {
             MT2266_Info[i].handle = MT_NULL;
-            MT2266_Info[i].address = MAX_UDATA;
+            MT2266_Info[i].address =MAX_UDATA;
             MT2266_Info[i].hUserData = MT_NULL;
 
             /* Reset the UHF Crossover Frequency tables on open/init. */

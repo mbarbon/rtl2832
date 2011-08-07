@@ -318,9 +318,51 @@ typedef enum {DVB_T, DVB_C, ATV, ATV_SECAM_L} standard;
 	incorrect tracking filter setting.
 */
 
+/* Scaling factor for the IF and RF freqencies.
+	Freqencies passed to functions must be multiplied by this factor.
+	(See Note above).
+*/
+//#define LOSCALE 40         
+
+/* Scaling factor for Xtal frequency.  
+   Use 32 for 16.0MHz, 25 for 20.48 and 4 for 20.25MHz.
+	(See Note above).
+*/
+//#define XTALSCALE 4      
+
+//#if intmode
+	/* Macros used for scaling frequency constants.  */
+	/* Use this form if using floating point math. */
 
 #define scalefrq(x) ( (UINT_32) ( ( (UINT_16) x) * (UINT_16) pExtra->LOSCALE ) ) 
+//	#define scalextal(x) ( (UINT_32) ( ( (UINT_16) x ) * (UINT_16) XTALSCALE ) ) 
 
+
+	/* Note, this is a scaling factor for the Xtal Reference applied to the MAX3543 Xtal Pin.
+		The only valid frequencies are 16.0, 20.25 or 20.48MHz and only with the following conditions:
+		RDiv = /1 or RDiv = /2, IF = 36.0MHz, IF = 36.15 MHz. 
+		(See Note above).
+	*/
+//	#define XTALREF 81
+	/* 20.25 * XTALSCALE = 81, where XTALSCALE=4
+		Use this form if NOT using floating point math.
+	*/
+//#else
+	/* Macros used for scaling frequency constants.  */
+	/* Use this form if NOT using floating point math. */
+//		#define scalefrq(x)  ( (unsigned short) ( ( (float) x ) * (float) LOSCALE ) ) 
+//		#define scalextal(x) ( (unsigned short) ( ( (float) x ) * (float) XTALSCALE ) )
+
+	/* Note, this is a scaling factor for the Xtal Reference applied to the MAX3543 Xtal Pin.
+		The only valid frequencies are 16.0, 20.25 or 20.48MHz and only with the following conditions:
+		RDiv = /1 or RDiv = /2, IF = 36.0MHz, IF = 36.15 MHz. 
+		(See Note above).
+	*/
+//	#define XTALREF scalextal(20.25)
+	/* Use this form if NOT using floating point math. */
+	/* #define XTALREF 81          
+	/* (XTALSCALE * Reference frequency 20.24 * 4 = 81) */
+//#endif
 
 
 
@@ -347,27 +389,36 @@ UINT_16 tfs_i(UINT_16 S0, UINT_16 S1, UINT_16 FreqRF, const UINT_16 c[5]);
 int MAX3543_SeedVCO(TUNER_MODULE *pTuner, UINT_16 Fvco);
 
 
-//////////////// External functions called by Max3543 code /////////////
-//   The implementation of these functions is left for the end user.  
-//   This is because of the many different microcontrollers and serial 
-//   I/O methods that can be used.  
+/******* External functions called by Max3543 code *******/
+
+
+		/*   The implementation of these functions is left for the end user.  */
+		/*   This is because of the many different microcontrollers and serial */
+		/*   I/O methods that can be used.  */
+
 //    void  Max3543_Write(unsigned short RegAddr, unsigned short data);
-//   This function sends out a byte of data using the following format.    
-//   Start, IC_address, ACK, Register Address, Ack, Data, Ack, Stop 
-//   IC_address is 0xC0 or 0xC4 depending on JP8 of the Max3543 evkit board. 
-//   0xC0 if the ADDR pin of the Max3543 is low, x0C4 if the pin is high. 
-//   The register address is the Index into the register 
-//   you wish to fill.
+
+		/*   This function sends out a byte of data using the following format.    */
+		/*   Start, IC_address, ACK, Register Address, Ack, Data, Ack, Stop */
+
+		/*   IC_address is 0xC0 or 0xC4 depending on JP8 of the Max3543 evkit board. */
+		/*   0xC0 if the ADDR pin of the Max3543 is low, x0C4 if the pin is high. */
+		/*   The register address is the Index into the register /*
+		/*   you wish to fill.*/
+
 //    unsigned short Max3543_Read(unsigned short reg);
-//   This reads and returns a byte from the Max3543.    
-//   The read sequence is: 
-//   Start, IC_address, ACK, Register Address, ack, Start, DeviceReadAddress, ack, 
-//   Data, NAck, Stop 
-//   Note that there is a IC_Address (0xC0 or 0xC4 as above) and a Device Read 
-//   Address which is the IC_Address + 1  (0xC1 or 0xC5).    
-//   There are also two start conditions in the read back sequence. 
-//   The Register Address is an index into the register you 
-//   wish to read back
+
+    /*   This reads and returns a byte from the Max3543.    */
+    /*   The read sequence is: */
+    /*   Start, IC_address, ACK, Register Address, ack, Start, DeviceReadAddress, ack, */
+	 /*   Data, NAck, Stop */
+    /*   Note that there is a IC_Address (0xC0 or 0xC4 as above) and a Device Read */
+	 /*   Address which is the IC_Address + 1  (0xC1 or 0xC5).    */
+    /*   There are also two start conditions in the read back sequence. */
+    /*   The Register Address is an index into the register you */
+	 /*   wish to read back. */
+
+
 //#endif
 
 

@@ -1085,6 +1085,13 @@ typedef int
 	int *pBandwidthMode
 	);
 
+// ADMTV804 RF power level getting function pointer
+typedef int
+(*ADMTV804_FP_GET_RF_POWER_LEVEL)(
+	TUNER_MODULE *pTuner,
+	long *pRfPowerLevel
+	);
+
 // ADMTV804 extra module
 struct ADMTV804_EXTRA_MODULE_TAG
 {
@@ -1098,15 +1105,18 @@ struct ADMTV804_EXTRA_MODULE_TAG
 	unsigned char REG30;
 	unsigned char REG31;
 	unsigned char REG5A;
+	unsigned char REG61;  // V1.6 added 
 
 	// ADMTV804 extra variables
 	unsigned long CrystalFreqHz;
 	int StandardBandwidthMode;
 	int IsStandardBandwidthModeSet;
+	long RfPowerLevel;
 
 	// ADMTV804 extra function pointers
 	ADMTV804_FP_SET_STANDARD_BANDWIDTH_MODE   SetStandardBandwidthMode;
 	ADMTV804_FP_GET_STANDARD_BANDWIDTH_MODE   GetStandardBandwidthMode;
+	ADMTV804_FP_GET_RF_POWER_LEVEL            GetRfPowerLevel;
 };
 
 
@@ -1251,7 +1261,8 @@ typedef int
 // FC0013 increase IQ LPF BW
 typedef int
 (*FC0013_FP_RC_CAL_ADD)(
-	TUNER_MODULE *pTuner
+	TUNER_MODULE *pTuner,
+	int RcValue
 	);
 
 // FC0013 extra module
@@ -1261,7 +1272,6 @@ struct FC0013_EXTRA_MODULE_TAG
 	unsigned long CrystalFreqHz;
 	int BandwidthMode;
 	int IsBandwidthModeSet;
-	int RcAddValue;
 
 	// FC0013 extra function pointers
 	FC0013_FP_SET_BANDWIDTH_MODE   SetBandwidthMode;
@@ -1445,6 +1455,190 @@ struct TDAC7_EXTRA_MODULE_TAG
 
 
 
+
+// VA1T1ER2094 extra module
+typedef struct VA1T1ER2094_EXTRA_MODULE_TAG VA1T1ER2094_EXTRA_MODULE;
+struct VA1T1ER2094_EXTRA_MODULE_TAG
+{
+	// VA1T1ER2094 extra data
+	unsigned char DividerMsb;
+	unsigned char DividerLsb;
+	unsigned char Control1;
+	unsigned char Control2;
+	unsigned char Control3;
+};
+
+
+
+
+
+// TDAC3 extra module
+typedef struct TDAC3_EXTRA_MODULE_TAG TDAC3_EXTRA_MODULE;
+struct TDAC3_EXTRA_MODULE_TAG
+{
+	// TDAC3 extra data
+	unsigned char DividerMsb;
+	unsigned char DividerLsb;
+	unsigned char Control1;
+	unsigned char Control2;
+	unsigned char Control3;
+};
+
+
+
+
+
+// RT910 extra module
+#define RT910_INITIAL_TABLE_LENGTH     25
+typedef struct RT910_EXTRA_MODULE_TAG RT910_EXTRA_MODULE;
+
+// RT910 bandwidth mode setting function pointer
+typedef int
+(*RT910_FP_SET_BANDWIDTH_MODE)(
+	TUNER_MODULE *pTuner,
+	int BandwidthMode
+	);
+
+// RT910 bandwidth mode getting function pointer
+typedef int
+(*RT910_FP_GET_BANDWIDTH_MODE)(
+	TUNER_MODULE *pTuner,
+	int *pBandwidthMode
+	);
+
+// RT910 extra module
+struct RT910_EXTRA_MODULE_TAG
+{
+	// RT910 extra variables
+	unsigned long CrystalFreqHz;
+	int BandwidthMode;
+	int IsBandwidthModeSet;
+	unsigned char RT910RegsMap[RT910_INITIAL_TABLE_LENGTH];
+	unsigned char RT910BW8MCalib[RT910_INITIAL_TABLE_LENGTH];  // 80MHz for C.F. cali.
+
+
+	// RT910 extra function pointers
+	RT910_FP_SET_BANDWIDTH_MODE   SetBandwidthMode;
+	RT910_FP_GET_BANDWIDTH_MODE   GetBandwidthMode;
+};
+
+
+
+
+
+// DTM4C20 extra module
+typedef struct DTM4C20_EXTRA_MODULE_TAG DTM4C20_EXTRA_MODULE;
+struct DTM4C20_EXTRA_MODULE_TAG
+{
+	// DTM4C20 extra data
+	unsigned char DividerMsb;
+	unsigned char DividerLsb;
+	unsigned char Control1;
+	unsigned char Control2;
+	unsigned char Control3;
+};
+
+
+
+
+
+// GTFD32 extra module
+typedef struct GTFD32_EXTRA_MODULE_TAG GTFD32_EXTRA_MODULE;
+struct GTFD32_EXTRA_MODULE_TAG
+{
+	// GTFD32 extra data
+	unsigned char DividerMsb;
+	unsigned char DividerLsb;
+	unsigned char Control1;
+	unsigned char Control2;
+	unsigned char Control3;
+};
+
+
+
+
+
+// GTLP10 extra module
+typedef struct GTLP10_EXTRA_MODULE_TAG GTLP10_EXTRA_MODULE;
+struct GTLP10_EXTRA_MODULE_TAG
+{
+	// GTLP10 extra data
+	unsigned char DividerMsb;
+	unsigned char DividerLsb;
+	unsigned char Control1;
+	unsigned char Control2;
+	unsigned char Control3;
+};
+
+
+
+
+
+// JSS66T extra module
+typedef struct JSS66T_EXTRA_MODULE_TAG JSS66T_EXTRA_MODULE;
+struct JSS66T_EXTRA_MODULE_TAG
+{
+	// JSS66T extra data
+	unsigned char DividerMsb;
+	unsigned char DividerLsb;
+	unsigned char Control1;
+	unsigned char Control2;
+	unsigned char Control3;
+};
+
+
+
+
+
+// FC0013B extra module
+typedef struct FC0013B_EXTRA_MODULE_TAG FC0013B_EXTRA_MODULE;
+
+// FC0013B bandwidth mode setting function pointer
+typedef int
+(*FC0013B_FP_SET_BANDWIDTH_MODE)(
+	TUNER_MODULE *pTuner,
+	int BandwidthMode
+	);
+
+// FC0013B bandwidth mode getting function pointer
+typedef int
+(*FC0013B_FP_GET_BANDWIDTH_MODE)(
+	TUNER_MODULE *pTuner,
+	int *pBandwidthMode
+	);
+
+// FC0013B reset IQ LPF BW
+typedef int
+(*FC0013B_FP_RC_CAL_RESET)(
+	TUNER_MODULE *pTuner
+	);
+
+// FC0013B increase IQ LPF BW
+typedef int
+(*FC0013B_FP_RC_CAL_ADD)(
+	TUNER_MODULE *pTuner,
+	int RcValue
+	);
+
+// FC0013B extra module
+struct FC0013B_EXTRA_MODULE_TAG
+{
+	// FC0013B extra variables
+	unsigned long CrystalFreqHz;
+	int BandwidthMode;
+	int IsBandwidthModeSet;
+
+	// FC0013B extra function pointers
+	FC0013B_FP_SET_BANDWIDTH_MODE   SetBandwidthMode;
+	FC0013B_FP_GET_BANDWIDTH_MODE   GetBandwidthMode;
+	FC0013B_FP_RC_CAL_RESET         RcCalReset;
+	FC0013B_FP_RC_CAL_ADD           RcCalAdd;
+};
+
+
+
+
+
 /// Tuner module structure
 struct TUNER_MODULE_TAG
 {
@@ -1486,6 +1680,14 @@ struct TUNER_MODULE_TAG
 		SUTRE201_EXTRA_MODULE    Sutre201;
 		MR1300_EXTRA_MODULE      Mr1300;
 		TDAC7_EXTRA_MODULE       Tdac7;
+		VA1T1ER2094_EXTRA_MODULE Va1t1er2094;
+		TDAC3_EXTRA_MODULE       Tdac3;
+		RT910_EXTRA_MODULE       Rt910;
+		DTM4C20_EXTRA_MODULE     Dtm4c20;
+		GTFD32_EXTRA_MODULE      Gtfd32;
+		GTLP10_EXTRA_MODULE      Gtlp10;
+		JSS66T_EXTRA_MODULE      Jss66t;
+		FC0013B_EXTRA_MODULE     Fc0013b;
 	}
 	Extra;
 

@@ -1030,7 +1030,6 @@ error_status_set_demod_register_reading_address:
 
 // Internal function:
 // Get register bytes with freeze.
-// Note: The maximum reading byte must be greater than or equal to 4.
 
 #define DTMB_I2C_REG_DEBUG_PAGE_ADDR		0xc708
 #define DTMB_I2C_REG_DEBUG_ADDR_ADDR		0xc709
@@ -1063,6 +1062,7 @@ internal_dtmb_demod_addr_16bit_GetRegBytesWithFreeze(
 	pDemod->GetDeviceAddr(pDemod, &DeviceAddr);
 
 
+
 	// Note: The I2C format of demod register byte setting is as follows:
 	//       start_bit + (DeviceAddr | writing_bit) + RegWritingAddrMsb + RegWritingAddrLsb + writing_bytes (WritingByteNum bytes) + stop_bit
 
@@ -1091,13 +1091,7 @@ internal_dtmb_demod_addr_16bit_GetRegBytesWithFreeze(
 
 
 	// Get I2C_REG_DEBUG_BYTE 4 bytes.
-	WritingBuffer[0] = (DTMB_I2C_REG_DEBUG_BYTE_ADDR >> BYTE_SHIFT) & BYTE_MASK;
-	WritingBuffer[1] = DTMB_I2C_REG_DEBUG_BYTE_ADDR & BYTE_MASK;
-
-	if(pBaseInterface->I2cWrite(pBaseInterface, DeviceAddr, WritingBuffer, LEN_2_BYTE) != FUNCTION_SUCCESS)
-		goto error_status_set_demod_register_reading_address;
-
-	if(pBaseInterface->I2cRead(pBaseInterface, DeviceAddr, ReadingBuffer, LEN_4_BYTE) != FUNCTION_SUCCESS)
+	if(internal_dtmb_demod_addr_16bit_GetRegBytesNormally(pDemod, DTMB_I2C_REG_DEBUG_BYTE_ADDR, ReadingBuffer, LEN_4_BYTE) != FUNCTION_SUCCESS)
 		goto error_status_get_demod_registers;
 
 
@@ -1115,7 +1109,6 @@ internal_dtmb_demod_addr_16bit_GetRegBytesWithFreeze(
 
 
 error_status_get_demod_registers:
-error_status_set_demod_register_reading_address:
 error_status_set_demod_registers:
 	return FUNCTION_ERROR;
 }
@@ -1157,6 +1150,10 @@ dtmb_demod_addr_16bit_default_GetRegBytes(
 		case 0xc6:
 		case 0xc7:
 		case 0xe0:
+		case 0xe1:
+		case 0xe2:
+		case 0xe3:
+		case 0xe4:
 		case 0xf0:
 
 			if(internal_dtmb_demod_addr_16bit_GetRegBytesNormally(pDemod, RegStartAddr, pReadingBytes, ByteNum) != FUNCTION_SUCCESS)

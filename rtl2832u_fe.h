@@ -10,7 +10,8 @@
 #include "nim_rtl2832_e4000.h"
 #include "nim_rtl2832_mt2063.h"
 #include "nim_rtl2832_max3543.h"
-
+#include "nim_rtl2832_tda18272.h"
+#include "nim_rtl2832_fc0013.h"
 
 #include "nim_rtl2836_fc2580.h"
 #include "nim_rtl2836_mxl5007t.h"
@@ -36,7 +37,9 @@ typedef enum{
 	RTL2832_TUNER_TYPE_FC0012,
 	RTL2832_TUNER_TYPE_E4000,
 	RTL2832_TUNER_TYPE_MT2063,
-	RTL2832_TUNER_TYPE_MAX3543,	
+	RTL2832_TUNER_TYPE_MAX3543,
+	RTL2832_TUNER_TYPE_TDA18272,	
+	RTL2832_TUNER_TYPE_FC0013,
 	RTL2832_TUNER_TYPE_UNKNOWN,	
 }RTL2832_TUNER_TYPE;
 
@@ -88,40 +91,15 @@ struct rtl2832_state {
 
 	DVBT_NIM_MODULE*			pNim;//Nim of 2832
 	DVBT_NIM_MODULE			DvbtNimModuleMemory;
-	RTL2832_EXTRA_MODULE		Rtl2832ExtraModuleMemory;
-	MT2266_EXTRA_MODULE		Mt2266ExtraModuleMemory;	
-	FC2580_EXTRA_MODULE		Fc2580ExtraModuleMemory;
-	TUA9001_EXTRA_MODULE		TUA9001ExtraModuleMemory;
-	MXL5007T_EXTRA_MODULE		MXL5007TExtraModuleMemory;
-	FC0012_EXTRA_MODULE             FC0012ExtraModuleMemory;
-	E4000_EXTRA_MODULE               E4000ExtraModuleMemory;
-	RTL2832_MT2266_EXTRA_MODULE	Rtl2832Mt2266ExtraModuleMemory;
-	RTL2832_FC0012_EXTRA_MODULE      Rtl2832FC0012ExtraModuleMemory;
-	RTL2832_E4000_EXTRA_MODULE        Rtl2832E4000ExtraModuleMemory;
-	RTL2832_MT2063_EXTRA_MODULE	Rtl2832Mt2063ExtraModuleMemory;
-
 
 	//3  DTMB related begin ---
        DTMB_NIM_MODULE*                 pNim2836;//Nim of 2836
 	DTMB_NIM_MODULE                   DtmbNimModuleMemory;
-	RTL2836_EXTRA_MODULE           Rtl2836ExtraModuleMemory;
-	//MXL5007T_EXTRA_MODULE     MXL5007TExtraModuleMemoryFor2836;
-       //FC2580_EXTRA_MODULE             Fc2580ExtraModuleMemory,
 	//3DTMB related end ---
 
 	//3  DVBC related begin ---
        QAM_NIM_MODULE*			pNim2840;//Nim of 2840
 	QAM_NIM_MODULE				QamNimModuleMemory;
-	MAX3543_EXTRA_MODULE 		Max3543ExtraModuleMemory;
-	
-	MT2063_EXTRA_MODULE		Mt2063ExtraModuleMemory;
-
-	RTL2840_MT2063_EXTRA_MODULE	Rtl2840Mt2063ExtraModuleMemory;
-
-	//RTL2840_EXTRA_MODULE		Rtl2840ExtraModuleMemory;
-	//MXL5007T_EXTRA_MODULE	MXL5007TExtraModuleMemoryFor2836;
-       //FC2580_EXTRA_MODULE		Fc2580ExtraModuleMemory,
-	
 	//3DVBC related end ---
 	
 };
@@ -166,6 +144,17 @@ struct rtl2832_state {
 #define MAX3543_CHECK_VALUE		0x38
 #define MAX3543_SHUTDOWN_OFFSET	0x08
 
+
+#define TDA18272_TUNER_ADDR		0xc0
+#define TDA18272_CHECK_OFFSET		0x00
+#define TDA18272_CHECK_VALUE1		0xc7
+#define TDA18272_CHECK_VALUE2		0x60
+
+
+#define FC0013_BASE_ADDRESS		0xc6
+#define FC0013_CHECK_ADDRESS		0x00
+#define FC0013_CHECK_VALUE			0xa3
+#define FC0013_STANDBY_ADDRESS	0x06
 
 
 
@@ -228,40 +217,6 @@ typedef enum{
 #define DEMOD_CTL1				0x000b
 
 
-static int rtl2832_reg_mask[32]= {
-    0x00000001,
-    0x00000003,
-    0x00000007,
-    0x0000000f,
-    0x0000001f,
-    0x0000003f,
-    0x0000007f,
-    0x000000ff,
-    0x000001ff,
-    0x000003ff,
-    0x000007ff,
-    0x00000fff,
-    0x00001fff,
-    0x00003fff,
-    0x00007fff,
-    0x0000ffff,
-    0x0001ffff,
-    0x0003ffff,
-    0x0007ffff,
-    0x000fffff,
-    0x001fffff,
-    0x003fffff,
-    0x007fffff,
-    0x00ffffff,
-    0x01ffffff,
-    0x03ffffff,
-    0x07ffffff,
-    0x0fffffff,
-    0x1fffffff,
-    0x3fffffff,
-    0x7fffffff,
-    0xffffffff
-};
 
 
 
@@ -320,45 +275,22 @@ typedef enum {
 #define	SUPPORT_DTMB_MODE	0x02
 #define	SUPPORT_DVBC_MODE	0x04
 
-
+#define INPUT_ADC_LEVEL 	-8
 typedef enum {
 	RTL2832 = 0,
 	RTL2836,
 	RTL2840	
 }DEMOD_TYPE;
 
-static int check_dtmb_support(struct rtl2832_state* p_state);
-
-static int 	check_dvbc_support(struct rtl2832_state* p_state);
-
-static int
-set_demod_2836_power(
-		struct rtl2832_state* p_state, 
-		int  onoff);
-
-static int
-rtl2840_on_hwreset(
-		struct rtl2832_state* p_state);
 
 
-static int
-set_demod_2840_power(
-		struct rtl2832_state* p_state, 
-		int  onoff);
-
-
-static int
-demod_init_setting(
-		struct rtl2832_state * p_state);
-
-static int
-build_nim_module(
-		struct rtl2832_state*  p_state);
-
-static int 
-rtl2836_scan_procedure(
-		struct rtl2832_state * p_state);
-
+int rtl2832_read_signal_quality(
+	struct dvb_frontend*	fe,
+	u32*	quality);
+int 
+rtl2832_read_signal_strength(
+	struct dvb_frontend*	fe,
+	u16*	strength);
 #endif // __RTD2830_PRIV_H__
 
 

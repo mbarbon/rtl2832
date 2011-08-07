@@ -799,7 +799,7 @@ UINT32 MxL5007_Init(UINT8* pArray,				// a array pointer that store the addr and
 	};
 	//edit Init setting here
 
-	PIRVType myIRV;
+	PIRVType myIRV=IRV_Init;
 
 	switch(Mode)
 	{
@@ -1115,10 +1115,10 @@ MxL_ERR_MSG MxL_Get_Register(MxL5007_TunerConfigS* myTuner, UINT8 RegAddr, UINT8
 
 MxL_ERR_MSG MxL_Soft_Reset(MxL5007_TunerConfigS* myTuner)
 {
-	UINT32 Status=0;	
-	UINT8 reg_reset;
+/*	UINT32 Status=0;	*/
+	UINT8 reg_reset=0;
 	reg_reset = 0xFF;
-//	if(MxL_I2C_Write((UINT8)myTuner->I2C_Addr, &reg_reset, 1))
+/*	if(MxL_I2C_Write((UINT8)myTuner->I2C_Addr, &reg_reset, 1))*/
 	if(MxL_I2C_Write(myTuner, &reg_reset, 1))
 		return MxL_ERR_OTHERS;
 
@@ -1199,7 +1199,7 @@ MxL_ERR_MSG MxL_Tuner_Init(MxL5007_TunerConfigS* myTuner)
 
 MxL_ERR_MSG MxL_Tuner_RFTune(MxL5007_TunerConfigS* myTuner, UINT32 RF_Freq_Hz, MxL5007_BW_MHz BWMHz)
 {
-	UINT32 Status=0;
+	//UINT32 Status=0;
 	UINT8 pArray[MAX_ARRAY_SIZE];	// a array pointer that store the addr and data pairs for I2C write
 	UINT32 Array_Size;							// a integer pointer that store the number of element in above array
 

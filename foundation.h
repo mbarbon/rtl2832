@@ -16,7 +16,6 @@ Fundamental interface contains base function pointers and some mathematics tools
 #include "math_mpi.h"
 
 
- 
 #include "dvb-usb.h"
 #include "rtl2832u_io.h"
 
@@ -25,7 +24,7 @@ Fundamental interface contains base function pointers and some mathematics tools
 // Definitions
 
 // API version
-#define REALTEK_NIM_API_VERSION		"Realtek NIM API 2010.09.29"
+#define REALTEK_NIM_API_VERSION		"Realtek NIM API 2011.06.01"
 
 
 
@@ -53,7 +52,6 @@ Fundamental interface contains base function pointers and some mathematics tools
 #define BIT_1_MASK					0x2
 #define BIT_2_MASK					0x4
 #define BIT_3_MASK					0x8
-
 
 #define BIT_4_MASK					0x10
 #define BIT_5_MASK					0x20
@@ -104,6 +102,7 @@ enum MODULE_TYPE
 	// DTMB demod
 	DTMB_DEMOD_TYPE_RTL2836,				///<   RTL2836 DTMB demod
 	DTMB_DEMOD_TYPE_RTL2836B_DTMB,			///<   RTL2836B DTMB demod
+	DTMB_DEMOD_TYPE_RTD2974_DTMB,			///<   RTD2974 DTMB demod
 
 	// Tuner
 	TUNER_TYPE_TDCGG052D,					///<   TDCG-G052D tuner (QAM)
@@ -124,17 +123,26 @@ enum MODULE_TYPE
 	TUNER_TYPE_E4000,						///<   E4000 tuner (DVB-T)
 	TUNER_TYPE_DCT70704,					///<   DCT-70704 tuner (QAM)
 	TUNER_TYPE_MT2063,						///<   MT2063 tuner (DVB-T, QAM)
-	TUNER_TYPE_FC0012,						///<   FC0012 tuner (DVB-T)
+	TUNER_TYPE_FC0012,						///<   FC0012 tuner (DVB-T, DTMB)
 	TUNER_TYPE_TDAG,						///<   TDAG tuner (DTMB)
-	TUNER_TYPE_ADMTV804,					///<   ADMTV804 tuner (DVB-T)
+	TUNER_TYPE_ADMTV804,					///<   ADMTV804 tuner (DVB-T, DTMB)
 	TUNER_TYPE_MAX3543,						///<   MAX3543 tuner (DVB-T)
 	TUNER_TYPE_TDA18272,					///<   TDA18272 tuner (DVB-T, QAM, DTMB)
 	TUNER_TYPE_FC0013,						///<   FC0013 tuner (DVB-T, DTMB)
+	TUNER_TYPE_FC0013B,						///<   FC0013B tuner (DVB-T, DTMB)
 	TUNER_TYPE_VA1E1ED2403,					///<   VA1E1ED2403 tuner (DTMB)
 	TUNER_TYPE_AVALON,						///<   AVALON tuner (DTMB)
 	TUNER_TYPE_SUTRE201,					///<   SUTRE201 tuner (DTMB)
 	TUNER_TYPE_MR1300,						///<   MR1300 tuner (ISDB-T 1-Seg)
 	TUNER_TYPE_TDAC7,						///<   TDAC7 tuner (DTMB, QAM)
+	TUNER_TYPE_VA1T1ER2094,					///<   VA1T1ER2094 tuner (DTMB)
+	TUNER_TYPE_TDAC3,						///<   TDAC3 tuner (DTMB)
+	TUNER_TYPE_RT910,						///<   RT910 tuner (DVB-T)
+	TUNER_TYPE_DTM4C20,						///<   DTM4C20 tuner (DTMB)
+	TUNER_TYPE_GTFD32,						///<   GTFD32 tuner (DTMB)
+	TUNER_TYPE_GTLP10,						///<   GTLP10 tuner (DTMB)
+	TUNER_TYPE_JSS66T,						///<   JSS66T tuner (DTMB)
+	TUNER_TYPE_NONE,						///<   NONE tuner (DTMB)
 
 	// DVB-T NIM
 	DVBT_NIM_USER_DEFINITION,				///<   DVB-T NIM:   User definition
@@ -152,6 +160,7 @@ enum MODULE_TYPE
 	DVBT_NIM_RTL2832_MAX3543,				///<   DVB-T NIM:   RTL2832 + MAX3543
 	DVBT_NIM_RTL2832_TDA18272,				///<   DVB-T NIM:   RTL2832 + TDA18272
 	DVBT_NIM_RTL2832_FC0013,				///<   DVB-T NIM:   RTL2832 + FC0013
+	DVBT_NIM_RTL2832_RT910,					///<   DVB-T NIM:   RTL2832 + RT910
 
 	// QAM NIM
 	QAM_NIM_USER_DEFINITION,				///<   QAM NIM:   User definition
@@ -163,6 +172,9 @@ enum MODULE_TYPE
 	QAM_NIM_RTL2840_MT2063,					///<   QAM NIM:   RTL2840 + MT2063
 	QAM_NIM_RTL2840_MAX3543,				///<   QAM NIM:   RTL2840 + MAX3543
 	QAM_NIM_RTL2836B_DVBC_VA1T1ED6093,		///<   QAM NIM:   RTL2836B DVB-C + VA1T1ED6093
+	QAM_NIM_RTD2885_QAM_TDA18272,			///<   QAM NIM:   RTD2885 QAM + TDA18272
+	QAM_NIM_RTL2836B_DVBC_VA1E1ED2403,		///<   QAM NIM:   RTL2836B DVB-C + VA1E1ED2403
+	QAM_NIM_RTD2840B_QAM_MT2062,            ///<   QAM NIM:   RTD2840B QAM + MT2062
 
 	// DCR NIM
 	DCR_NIM_RTL2820_TDVMH715P,				///<   DCR NIM:   RTL2820 + TDVM-H751P
@@ -187,7 +199,15 @@ enum MODULE_TYPE
 	DTMB_NIM_RTL2836B_DTMB_AVALON,			///<   DTMB NIM:   RTL2836B DTMB + AVALON
 	DTMB_NIM_RTL2836B_DTMB_SUTRE201,		///<   DTMB NIM:   RTL2836B DTMB + SUTRE201
 	DTMB_NIM_RTL2836B_DTMB_TDAC7,	    	///<   DTMB NIM:   RTL2836B DTMB + ALPS TDAC7
-	DTMB_NIM_RTL2836B_DTMB_FC0013,	    	///<   DTMB NIM:   RTL2836B DTMB + FC0013
+	DTMB_NIM_RTL2836B_DTMB_FC0013B,	    	///<   DTMB NIM:   RTL2836B DTMB + FC0013B
+	DTMB_NIM_RTL2836B_DTMB_VA1T1ER2094,		///<   DTMB NIM:   RTL2836B DTMB + VA1T1ER2094
+	DTMB_NIM_RTL2836B_DTMB_TDAC3,	    	///<   DTMB NIM:   RTL2836B DTMB + ALPS TDAC3
+	DTMB_NIM_RTL2836B_DTMB_DTM4C20,	    	///<   DTMB NIM:   RTL2836B DTMB + DTM4C20
+	DTMB_NIM_RTL2836B_DTMB_GTFD32,			///<   DTMB NIM:   RTL2836B DTMB + GTFD32
+	DTMB_NIM_RTL2836B_DTMB_GTLP10,			///<   DTMB NIM:   RTL2836B DTMB + GTFD32
+	DTMB_NIM_RTL2836B_DTMB_JSS66T,			///<   DTMB NIM:   RTL2836B DTMB + JSS66T
+	DTMB_NIM_RTL2836B_DTMB_NONE,			///<   DTMB NIM:   RTL2836B DTMB + NONE TUNER
+	DTMB_NIM_RTD2974_DTMB_VA1E1ED2403,		///<   DTMB NIM:   RTD2974 DTMB + VA1E1ED2403
 };
 
 
@@ -293,13 +313,15 @@ enum TS_INTERFACE_MODE
 
 
 /// Diversity mode
-enum DIVERSITY_MODE
+enum DIVERSITY_PIP_MODE
 {
-	DIVERSITY_OFF,					///<   Diversity disable
+	DIVERSITY_PIP_OFF,				///<   Diversity disable and PIP disable
 	DIVERSITY_ON_MASTER,			///<   Diversity enable for Master Demod
 	DIVERSITY_ON_SLAVE,				///<   Diversity enable for Slave Demod
+	PIP_ON_MASTER,					///<   PIP enable for Master Demod
+	PIP_ON_SLAVE,					///<   PIP enable for Slave Demod
 };
-#define DIVERSITY_MODE_NUM		3
+#define DIVERSITY_PIP_MODE_NUM		5
 
 
 

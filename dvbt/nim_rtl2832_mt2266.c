@@ -388,7 +388,7 @@ rtl2832_mt2266_UpdateFunction(
 
 	Handle_t Mt2266Handle;
 	UData_t Status;
-
+	
 
 
 	// Get tuner module and demod module.
@@ -422,6 +422,21 @@ rtl2832_mt2266_UpdateFunction(
 		&pNimExtra->LnaGainOld
 		);
 
+/*
+	handle_t demod_handle,
+	handle_t tuner_handle,
+	unsigned char* lna_config,
+	unsigned char* uhf_sens,
+	unsigned char *agc_current_state,
+	unsigned long *lna_gain_old
+	
+	unsigned char LnaConfig;
+	unsigned char UhfSens;
+	unsigned char AgcCurrentState;
+	unsigned long LnaGainOld;	
+	
+*/
+
 	if(MT_IS_ERROR(Status))
 		goto error_status_execute_function;
 
@@ -452,7 +467,7 @@ error_status_set_registers:
 UData_t
 demod_get_pd(
 	handle_t demod_handle,
-	uint16_t *pd_value
+	unsigned short *pd_value
 	)
 {
 	DVBT_DEMOD_MODULE *pDemod;
@@ -467,7 +482,7 @@ demod_get_pd(
 		goto error_status_get_registers;
 
 	// Set pd_value according to RSSI_R.
-	*pd_value = (uint16_t)RssiR;
+	*pd_value = (unsigned short)RssiR;
 
 
 	return MT_OK;
@@ -482,8 +497,8 @@ error_status_get_registers:
 UData_t
 demod_get_agc(
 	handle_t demod_handle,
-	uint16_t *rf_level,
-	uint16_t *bb_level
+	unsigned short *rf_level,
+	unsigned short *bb_level
 	)
 {
 	DVBT_DEMOD_MODULE *pDemod;
@@ -502,10 +517,10 @@ demod_get_agc(
 		goto error_status_get_registers;
 
 	// Convert RF and IF AGC value to proper format.
-	*rf_level = (uint16_t)((RfAgc + (1 << (RTL2832_RF_AGC_REG_BIT_NUM - 1))) *
+	*rf_level = (unsigned short)((RfAgc + (1 << (RTL2832_RF_AGC_REG_BIT_NUM - 1))) *
 		(1 << (MT2266_DEMOD_ASSUMED_AGC_REG_BIT_NUM - RTL2832_RF_AGC_REG_BIT_NUM)));
 
-	*bb_level = (uint16_t)((IfAgc + (1 << (RTL2832_IF_AGC_REG_BIT_NUM - 1))) *
+	*bb_level = (unsigned short)((IfAgc + (1 << (RTL2832_IF_AGC_REG_BIT_NUM - 1))) *
 		(1 << (MT2266_DEMOD_ASSUMED_AGC_REG_BIT_NUM - RTL2832_IF_AGC_REG_BIT_NUM)));
 
 
@@ -715,7 +730,7 @@ error_status_execute_function:
 
 
 
-UData_t demod_pdcontrol_reset(handle_t demod_handle, handle_t tuner_handle, uint8_t *agc_current_state) {
+UData_t demod_pdcontrol_reset(handle_t demod_handle, handle_t tuner_handle, unsigned char *agc_current_state) {
 
 	DVBT_DEMOD_MODULE *pDemod;
 	unsigned long BinaryValue;
@@ -749,37 +764,41 @@ error_status_set_registers:
 
 
 
-UData_t demod_pdcontrol(handle_t demod_handle, handle_t tuner_handle, uint8_t* lna_config, uint8_t* uhf_sens,
-					 uint8_t *agc_current_state, uint32_t *lna_gain_old) {
+UData_t demod_pdcontrol(handle_t demod_handle, handle_t tuner_handle, unsigned char* lna_config, unsigned char* uhf_sens,
+					 unsigned char *agc_current_state, unsigned long *lna_gain_old) {
 
-	uint16_t pd_value;
-	uint16_t rf_level, bb_level;
-	uint32_t lna_gain;
-	uint8_t zin=0;
+	unsigned short pd_value;
+	unsigned short rf_level, bb_level;
+	unsigned long lna_gain;
+	unsigned char zin=0;
+	unsigned int tmp_freq=0,tmp_lna_gain=0;
 	
-//	uint8_t temp[2];
-//	uint8_t agc_bb_min;
+//	unsigned char temp[2];
+//	unsigned char agc_bb_min;
 //	demod_data_t* local_data;
 
 	
-	uint8_t band=1;  /* band=0: vhf, band=1: uhf low, band=2: uhf high */
-	uint32_t freq;
+	unsigned char band=1;  /* band=0: vhf, band=1: uhf low, band=2: uhf high */
+	unsigned long freq;
 
 	// AGC threshold values
-	uint16_t sens_on[]  = {11479, 11479, 32763};
-	uint16_t sens_off[] = {36867, 36867, 44767};
-	uint16_t lin_off[]  = {23619, 23619, 23619};
-	uint16_t lin_on[]   = {38355, 38355, 38355};
-	uint16_t pd_upper[] = {85,    85,    85};
-	uint16_t pd_lower[] = {74,    74,    74};
-	uint8_t next_state;
+	unsigned short sens_on[]  = {11479, 11479, 32763};
+	unsigned short sens_off[] = {36867, 36867, 44767};
+	unsigned short lin_off[]  = {23619, 23619, 23619};
+	unsigned short lin_on[]   = {38355, 38355, 38355};
+	unsigned short pd_upper[] = {85,    85,    85};
+	unsigned short pd_lower[] = {74,    74,    74};
+	unsigned char next_state;
 
 	// demod_data_t* local_data = (demod_data_t*)demod_handle;	
 
-	if(MT_IS_ERROR(MT2266_GetParam(tuner_handle, MT2266_INPUT_FREQ, &freq))) goto error_status;
-	if(MT_IS_ERROR(MT2266_GetParam(tuner_handle, MT2266_LNA_GAIN, &lna_gain))) goto error_status;
+	if(MT_IS_ERROR(MT2266_GetParam(tuner_handle, MT2266_INPUT_FREQ, &tmp_freq))) goto error_status;
+	if(MT_IS_ERROR(MT2266_GetParam(tuner_handle, MT2266_LNA_GAIN, &tmp_lna_gain))) goto error_status;
 	if(MT_IS_ERROR(MT2266_GetReg(tuner_handle,0x1e,&zin))) goto error_status;
 
+	freq=(unsigned long)(tmp_freq);
+	lna_gain=(unsigned long)(tmp_lna_gain);
+	
 	if (freq <= 250000000) band=0;
 	else if (freq < 660000000) band=1;
 	else band=2;
@@ -1033,9 +1052,10 @@ UData_t demod_pdcontrol(handle_t demod_handle, handle_t tuner_handle, uint8_t* l
 			}
 	}	
 
-	if(MT_IS_ERROR(MT2266_GetParam(tuner_handle, MT2266_LNA_GAIN,&lna_gain))) goto error_status;
+	if(MT_IS_ERROR(MT2266_GetParam(tuner_handle, MT2266_LNA_GAIN,&tmp_lna_gain))) goto error_status;
+	lna_gain=(unsigned long)(tmp_lna_gain);
 
-	*lna_config=(uint8_t)lna_gain;
+	*lna_config=(unsigned char)lna_gain;
 
 /*
 #ifndef _HOST_DLL

@@ -715,10 +715,11 @@ int FC0012_Open(TUNER_MODULE *pTuner)
 	// Modified for up-dowm AGC by Realtek.
 	if(FC0012_Write(pTuner, 0x0C, 0xFC) != FC0012_I2C_SUCCESS) goto error_status;      
 
-//	if(FC0012_Write(pTuner, 0x0D, 0x02) != FC0012_I2C_SUCCESS) goto error_status;      // AGC Not Forcing & LNA Forcing 
+	// 0x0D, val=0x2 for DVBT
+	if(FC0012_Write(pTuner, 0x0D, 0x02) != FC0012_I2C_SUCCESS) goto error_status;      // AGC Not Forcing & LNA Forcing 
 	
 	// Modified for 2836B DTMB by Realtek.
-	if(FC0012_Write(pTuner, 0x0D, 0x06) != FC0012_I2C_SUCCESS) goto error_status;      // AGC Not Forcing & LNA Forcing 
+//	if(FC0012_Write(pTuner, 0x0D, 0x06) != FC0012_I2C_SUCCESS) goto error_status;      // AGC Not Forcing & LNA Forcing 
     
 	if(FC0012_Write(pTuner, 0x0E, 0x00) != FC0012_I2C_SUCCESS) goto error_status;
     if(FC0012_Write(pTuner, 0x0F, 0x00) != FC0012_I2C_SUCCESS) goto error_status;
